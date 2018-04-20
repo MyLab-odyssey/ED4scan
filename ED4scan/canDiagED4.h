@@ -19,7 +19,7 @@
 //! \brief   Library module for retrieving diagnostic data. 
 //! \date    2018-April
 //! \author  MyLab-odyssey
-//! \version 0.4.2
+//! \version 0.4.3
 //--------------------------------------------------------------------------------
 #ifndef CANDIAG_H
 #define CANDIAG_H
