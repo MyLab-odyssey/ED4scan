@@ -27,7 +27,7 @@
 //Definitions for BMS
 #define DATALENGTH 126
 #define CELLCOUNT 96
-#define RAW_VOLTAGES 0           //!< Use RAW values or calc ADC offset voltage
+#define RAW_VOLTAGES 0           //!< Use RAW values or calc with ADC resolution 
 #define IQR_FACTOR 1.5           //!< Factor to define Outliners-Range, 1.5 for suspected outliners, 3 for definitive outliners
 
 char* const PROGMEM EVMODES[] ={"HV OFF", "slow CHG", "fast CHG", "HV ON"};
@@ -123,7 +123,7 @@ typedef struct {
   byte ProdYear;                 //!< year of battery production
   
   float SOC;                     //!< State of Charge, as displayed in dash (x/50)
-  byte SOCrecalState;            //!< State of SOC recal
+  byte SOCrecalState;            //!< State of SOC recal (experimental, tbd)
   
   byte fSOH;                     //!< Flag showing if degraded cells are found, or battery failiure present 
   byte SOH;                      //!< Battery State of Health in %

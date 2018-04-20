@@ -68,7 +68,6 @@ size_t getLength(const __FlashStringHelper *ifsh)
 void printWelcomeScreen() {
   byte vLength = strlen(version);
   PrintSPACER();
-  //Serial.println(F("--- ED Battery Management Diagnostics ---"));
   Serial.println(F("--- ED4 Smart CAN  --  EV Diagnostics ---"));
   Serial.print(F("--- v")); Serial.print(version);
   for (byte i = 0; i < (41 - 5 - vLength - 3); i++) {
@@ -512,7 +511,7 @@ void printTCUdata() {
 void printBMSall() {
   byte selected[BMSCOUNT];   //hold list for selected tasks
   
-  //Read CAN-Bus IDs related to BMS (sniff traffic)
+  //Read all CAN-Bus IDs related to BMS
   for (byte i = 0; i < BMSCOUNT; i++) {
     selected[i] = i;
   }
