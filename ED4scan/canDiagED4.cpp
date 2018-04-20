@@ -1417,18 +1417,11 @@ char canDiag::OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose) {
   this->setCAN_ID(rqID_OBL, respID_OBL);
   items = this->Request_Diagnostics(rqIDpart);
   
-  if (items){
+  if (items) {
     if (debug_verbose) {
        PrintReadBuffer(items);
     }
-    byte n;
-    byte comp = 0;
-    for (n = 3; n < 7; n++) {
-        if (data[n] != ID_7KW[n - 3]) {
-          comp++;
-        }
-    }
-    if (comp == 4){
+    if (strcmp_P((const char *) (data + 3), ID_7KW) == 0) {
       return true;
     } else {
       return false;
