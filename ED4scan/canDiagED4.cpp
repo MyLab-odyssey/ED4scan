@@ -126,12 +126,12 @@ void canDiag::setCAN_Filter(unsigned long filter) {
 void canDiag::setCAN_Filter_DRV() {
   myCAN0->init_Mask(0, 0, 0x07FF0000);
   myCAN0->init_Mask(1, 0, 0x07FF0000);
-  myCAN0->init_Filt(0, 0, 0x00020000);
-  myCAN0->init_Filt(1, 0, 0x00031800);
-  myCAN0->init_Filt(2, 0, 0x0003CE00);
-  myCAN0->init_Filt(3, 0, 0x0003F200);
-  myCAN0->init_Filt(4, 0, 0x0003D700);
-  myCAN0->init_Filt(5, 0, 0x00050400);
+  myCAN0->init_Filt(0, 0, 0x02000000);
+  myCAN0->init_Filt(1, 0, 0x03180000);
+  myCAN0->init_Filt(2, 0, 0x03CE0000);
+  myCAN0->init_Filt(3, 0, 0x03F20000);
+  myCAN0->init_Filt(4, 0, 0x03D70000);
+  myCAN0->init_Filt(5, 0, 0x05040000);
   //delay(100);
   myCAN0->setMode(MCP_NORMAL);                     // Set operation mode to normal so the MCP2515 sends acks to received data.
 }
