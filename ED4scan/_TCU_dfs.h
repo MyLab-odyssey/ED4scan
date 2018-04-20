@@ -19,12 +19,12 @@
 //! \brief   Definitions and structures for the Tele-Communication Unit.
 //! \date    2018-April
 //! \author  MyLab-odyssey
-//! \version 0.4.2
+//! \version 0.4.3
 //--------------------------------------------------------------------------------
 #ifndef TCU_DFS_H
 #define TCU_DFS_H
 
-char* const PROGMEM TCU_MODE[] ={"OFF", "ON", "?", "CN"};
+const char* const PROGMEM TCU_MODE[] ={"OFF", "ON", "?", "CN"};
 
 struct TCUdatetime {
   byte year = 0;

@@ -19,7 +19,7 @@
 //! \brief   Functions for the Command Line Interface (CLI) menu system
 //! \date    2018-April
 //! \author  MyLab-odyssey
-//! \version 0.4.2
+//! \version 0.4.3
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
@@ -50,6 +50,7 @@ void setupMenu() {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void get_all (uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   switch (myDevice.menu) {
     case subBMS:
       printBMSall();
@@ -73,6 +74,7 @@ void get_all (uint8_t arg_cnt, char **args) {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void get_temperatures (uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   switch (myDevice.menu) {
     case subBMS:
       if (DiagCAN.getBatteryTemperature(&BMS, false)){
@@ -96,6 +98,7 @@ void get_temperatures (uint8_t arg_cnt, char **args) {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void get_voltages (uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   byte bms_sel[] = {BMSstate, BMSlimit, BMSbal};
   switch (myDevice.menu) {
     case subBMS:
@@ -121,6 +124,7 @@ void get_voltages (uint8_t arg_cnt, char **args) {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void get_OCVtable (uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   switch (myDevice.menu) {
     case subBMS:
         PrintSPACER(F("OCV Lookup"));
@@ -138,6 +142,7 @@ void get_OCVtable (uint8_t arg_cnt, char **args) {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void get_RESfactors (uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   switch (myDevice.menu) {
     case subBMS:
         PrintSPACER(F("Cell Resistance"));
@@ -155,6 +160,7 @@ void get_RESfactors (uint8_t arg_cnt, char **args) {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void get_BMSlog (uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   switch (myDevice.menu) {
     case subBMS:
         PrintSPACER(F("BMS Log"));
@@ -172,6 +178,7 @@ void get_BMSlog (uint8_t arg_cnt, char **args) {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void get_SOHstate (uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   byte bms_sel[] = {3,5};
   switch (myDevice.menu) {
     case subBMS:
@@ -191,6 +198,7 @@ void get_SOHstate (uint8_t arg_cnt, char **args) {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void get_CHGlog (uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   switch (myDevice.menu) {
     case subBMS:
     case subOBL:
@@ -210,6 +218,7 @@ void get_CHGlog (uint8_t arg_cnt, char **args) {
 #ifdef HELP
 void help(uint8_t arg_cnt, char **args)
 {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   switch (myDevice.menu) {
     case MAIN:
       Serial.println(F("Main:"));
@@ -246,6 +255,7 @@ void help(uint8_t arg_cnt, char **args)
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void show_splash(uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
    byte selected[] = {BMSstate, BMSsoc, BMSlimit, EVkey, EVdcdc, EVodo, EVrange};
    getState_BMS(selected, sizeof(selected));
    printSplashScreen();
@@ -257,6 +267,7 @@ void show_splash(uint8_t arg_cnt, char **args) {
 //--------------------------------------------------------------------------------
 void show_info(uint8_t arg_cnt, char **args)
 {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   //Serial.print(F("Usable Memory: ")); Serial.println(getFreeRam());
   //Serial.print(F("Menu: ")); Serial.println(myDevice.menu);
   Serial.print(F("OBC     : ")); 
@@ -381,6 +392,7 @@ void init_cmd_prompt() {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void main_menu (uint8_t arg_cnt, char **args) {
+  (void) arg_cnt, (void) args;  // Avoid unused param warning
   myDevice.menu = MAIN;
   init_cmd_prompt();
 }

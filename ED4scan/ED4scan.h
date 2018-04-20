@@ -19,7 +19,7 @@
 //! \brief   Definitions and structures for the main program ED4scan.ino
 //! \date    2018-April
 //! \author  MyLab-odyssey
-//! \version 0.4.2
+//! \version 0.4.3
 //--------------------------------------------------------------------------------
 
 #define VERBOSE 1                //!< Set default VERBOSE mode to output individual cell data
@@ -34,7 +34,7 @@
 #include "canDiagED4.h"
 
 //Global definitions
-char* const PROGMEM version = "0.4.2";
+const char* const PROGMEM version = "0.4.3";
 
 #define FAILURE F("* FAIL *")
 #define MSG_OK F("OK")
@@ -45,7 +45,7 @@ char* const PROGMEM version = "0.4.2";
 #define MSG_A_STATUS F(", amps & status")
 #define MSG_T F(" t     Temperatures")
 
-char* const PROGMEM ON_OFF[] ={"OFF", "ON"};
+const char* const PROGMEM ON_OFF[] ={"OFF", "ON"};
 
 #define CS     10                //!< chip select pin of MCP2515 CAN-Controller
 #define CS_SD  8                 //!< CS for SD card, if you plan to use a logger...

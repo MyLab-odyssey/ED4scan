@@ -19,7 +19,7 @@
 //! \brief   Functions for serial printing the datasets
 //! \date    2018-April
 //! \author  MyLab-odyssey
-//! \version 0.4.2
+//! \version 0.4.3
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ void PrintSPACER() {
   Serial.println();
 }
 
-void PrintSPACER(__FlashStringHelper* titel) {
+void PrintSPACER(const __FlashStringHelper* titel) {
   size_t len = getLength(titel) + 4;
   byte start = 4; //(42 - len) / 6;
 
@@ -97,6 +97,7 @@ void printHeaderData() {
 //! \brief   Output battery production data and battery status SOH flag
 //--------------------------------------------------------------------------------
 void printBatteryProductionData(boolean fRPT) {
+  (void) fRPT;  // Avoid unused param warning
   Serial.print(F("SOH  : ")); Serial.print(BMS.SOH); Serial.print(F("%, "));
   if (BMS.fSOH == 0xFF) {
     Serial.println(MSG_OK);
@@ -153,7 +154,7 @@ void printStandardDataset() {
   Serial.print(BMS.LV_DCDC_load / 256.0 * 100.0,0); Serial.println(F(" %"));
   Serial.print(F("EV   : "));
   Serial.print((char *) pgm_read_word(ON_OFF + (BMS.KeyState))); Serial.print(F(", ")); 
-  if (BMS.EVmode >= 0 && BMS.EVmode <= 3) {
+  if (BMS.EVmode <= 3) {
     Serial.print((char *) pgm_read_word(EVMODES + BMS.EVmode));
   } else {
     Serial.print(BMS.EVmode, HEX);
@@ -509,7 +510,7 @@ void printTCUdata() {
 //! \brief   The allocated memory will be released after the data output
 //--------------------------------------------------------------------------------
 void printBMSall() {
-  byte selected[BMSCOUNT];   //hold list for selected tasks
+  byte selected[12];   //hold list for selected tasks
   
   //Read all CAN-Bus IDs related to BMS
   for (byte i = 0; i < BMSCOUNT; i++) {
