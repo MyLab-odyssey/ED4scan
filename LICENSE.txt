@@ -25,4 +25,4 @@ SOFTWARE.
 
 Informal warning
 
-The software does communicate with the systems within your car. It is soley intended for the use of the immobile car standing still. Do not use it while driving, as it is not tested for this usecase. Everything is reverse engineered and the software may contain errors! DO NOT MODIFY THE SOURCE CODE AND ALTER PARAMETERS THAT ARE SENT TO THE CARS SYSTEMS!
+The software does communicate with the systems within your car. It is solely intended for the use of the immobile car standing still. Do not use it while driving, as it is not tested for this usecase. Everything is reverse engineered and the software may contain errors! DO NOT MODIFY THE SOURCE CODE AND ALTER PARAMETERS THAT ARE SENT TO THE CARS SYSTEMS!
