@@ -19,7 +19,7 @@
 //! \brief   Library module for retrieving diagnostic data. 
 //! \date    2018-April
 //! \author  MyLab-odyssey
-//! \version 0.4.2
+//! \version 0.4.3
 //--------------------------------------------------------------------------------
 #ifndef CANDIAG_H
 #define CANDIAG_H
@@ -109,7 +109,6 @@ public:
     void setCAN_Filter(unsigned long filter);
     void setCAN_ID(unsigned long _respID);
     void setCAN_ID(unsigned long _rqID, unsigned long _respID);
-    void setCAN_Filter_DRV();
 
 //--------------------------------------------------------------------------------
 //! \brief   Get methods for BMS data
@@ -118,7 +117,7 @@ public:
     boolean getDCDC_State(BatteryDiag_t *myBMS, boolean debug_verbose);
     boolean getBatteryTemperature(BatteryDiag_t *myBMS, boolean debug_verbose);
     boolean getBatteryDate(BatteryDiag_t *myBMS, boolean debug_verbose);
-    boolean getBatteryVIN(BatteryDiag_t *myBMS, boolean debug_verbose);
+    //boolean getBatteryVIN(BatteryDiag_t *myBMS, boolean debug_verbose);
     boolean getBalancingStatus(BatteryDiag_t *myBMS, boolean debug_verbose);
     boolean getIsolationValue(BatteryDiag_t *myBMS, boolean debug_verbose);
     boolean getBatteryCapacity(BatteryDiag_t *myBMS, boolean debug_verbose);

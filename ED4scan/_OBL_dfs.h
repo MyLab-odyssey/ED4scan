@@ -19,7 +19,7 @@
 //! \brief   Definitions and structures for the On-Board-Loader (Charger) module.
 //! \date    2018-April
 //! \author  MyLab-odyssey
-//! \version 0.4.2
+//! \version 0.4.3
 //--------------------------------------------------------------------------------
 #ifndef OBL_DFS_H
 #define OBL_DFS_H
@@ -27,14 +27,14 @@
 //Definitions for OBL
 #define TEMP_OFFSET 50
 
-char* const PROGMEM OBL_ID[] ={"22KW", "7KW"};
-char* const PROGMEM ID_7KW = "2239";
-char* const PROGMEM OBL_STATE[] ={"CHG", "ON", "STBY"};
-char* const PROGMEM PILOT_STATE[] ={"-", "B", "C", "D", "E"};
+const char ID_7KW[] = {'2','2','3','9'};
+const char* const PROGMEM OBL_ID[] ={"22KW", "7KW"};
+const char* const PROGMEM OBL_STATE[] ={"CHG", "ON", "STBY"};
+const char* const PROGMEM PILOT_STATE[] ={"-", "B", "C", "D", "E"};
 
 //OBL data structure
 typedef struct {       
-  char OBL7KW = -1;               //!< Flag set if standard or 22kW charger is detected in system, -1 indicate fail
+  char OBL7KW = -1;               //!< Flag set if standard (TRUE) or 22kW charger (FALSE) is detected in system, -1 indicate fail
   uint16_t MainsAmps[3];          //!< AC current of L1, L2, L3 (x/10)
   uint16_t MainsVoltage[3];       //!< AC voltage of L1, L2, L3 (x/10)
   uint16_t CHGpower[3];           //!< Power of rail1, rail2 W (x/2) & max available kw (x/64)

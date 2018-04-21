@@ -19,7 +19,7 @@
 //! \brief   Library module for retrieving diagnostic data.
 //! \date    2018-April
 //! \author  MyLab-odyssey
-//! \version 0.4.2
+//! \version 0.4.3
 //--------------------------------------------------------------------------------
 #include "canDiagED4.h"
 
@@ -118,20 +118,6 @@ void canDiag::setCAN_Filter(unsigned long filter) {
   myCAN0->init_Filt(3, 0, filter);
   myCAN0->init_Filt(4, 0, filter);
   myCAN0->init_Filt(5, 0, filter);
-  //delay(100);
-  myCAN0->setMode(MCP_NORMAL);                     // Set operation mode to normal so the MCP2515 sends acks to received data.
-}
-
-
-void canDiag::setCAN_Filter_DRV() {
-  myCAN0->init_Mask(0, 0, 0x07FF0000);
-  myCAN0->init_Mask(1, 0, 0x07FF0000);
-  myCAN0->init_Filt(0, 0, (0x200 << 16));
-  myCAN0->init_Filt(1, 0, (0x318 << 16));
-  myCAN0->init_Filt(2, 0, (0x3CE << 16));
-  myCAN0->init_Filt(3, 0, (0x3F2 << 16));
-  myCAN0->init_Filt(4, 0, (0x3D7 << 16));
-  myCAN0->init_Filt(5, 0, (0x504 << 16));
   //delay(100);
   myCAN0->setMode(MCP_NORMAL);                     // Set operation mode to normal so the MCP2515 sends acks to received data.
 }
@@ -298,7 +284,7 @@ boolean canDiag::Read_FC_Response(int16_t items) {
 
   byte i;
   int16_t n = 7;
-  int16_t rspLine = 0;
+  uint16_t rspLine = 0;
   int16_t FC_count = 0;
   byte FC_length = rqFlowControl[1];
   boolean fDiagOK = false;
@@ -583,7 +569,7 @@ boolean canDiag::getBatteryDate(BatteryDiag_t *myBMS, boolean debug_verbose) {
 //! \param   enable verbose / debug output (boolean)
 //! \return  report success (boolean)
 //--------------------------------------------------------------------------------
-boolean canDiag::getBatteryVIN(BatteryDiag_t *myBMS, boolean debug_verbose) {
+/*boolean canDiag::getBatteryVIN(BatteryDiag_t *myBMS, boolean debug_verbose) {
 
   uint16_t items;
 
@@ -607,7 +593,7 @@ boolean canDiag::getBatteryVIN(BatteryDiag_t *myBMS, boolean debug_verbose) {
     }
   }
   return false;
-}
+}*/
 
 //--------------------------------------------------------------------------------
 //! \brief   Read and evaluate battery high voltage status
@@ -695,7 +681,7 @@ boolean canDiag::getBatteryCapacity(BatteryDiag_t *myBMS, boolean debug_verbose)
 
     if (CapMode == 1) {
       CellCapacity.clear();
-      this->ReadCellCapacity(data, 16, (CELLCOUNT / 2)); //data starting at #16, but two mean values pushed besfore!
+      this->ReadCellCapacity(data, 16, (CELLCOUNT / 2)); //data starting at #16, but two mean values pushed before!
     }
 
     fOK = true;
@@ -720,9 +706,9 @@ boolean canDiag::getBatteryCapacity(BatteryDiag_t *myBMS, boolean debug_verbose)
     if (CapMode == 1) {
       this->ReadCellCapacity(data, 3, CELLCOUNT / 2);
 
-      myBMS->Ccap_As.min = CellCapacity.minimum(&myBMS->CAP_min_at);
+      myBMS->Ccap_As.min = CellCapacity.minimum((int16_t *)&myBMS->CAP_min_at);
       CellCapacity.push(myBMS->Ccap_As.min); CellCapacity.push(myBMS->Ccap_As.min);
-      myBMS->Ccap_As.max = CellCapacity.maximum(&myBMS->CAP_max_at);
+      myBMS->Ccap_As.max = CellCapacity.maximum((int16_t *)&myBMS->CAP_max_at);
       myBMS->Ccap_As.mean = CellCapacity.mean();
     }
 
@@ -759,8 +745,8 @@ boolean canDiag::getBatteryCapacity(BatteryDiag_t *myBMS, boolean debug_verbose)
     }
     if (CapMode == 2) {
       this->ReadCellCapacity(data, 3, CELLCOUNT / 2);
-      myBMS->Ccap_As.min = CellCapacity.minimum(&myBMS->CAP_min_at) * 10;
-      myBMS->Ccap_As.max = CellCapacity.maximum(&myBMS->CAP_max_at) * 10;
+      myBMS->Ccap_As.min = CellCapacity.minimum((int16_t *)&myBMS->CAP_min_at) * 10;
+      myBMS->Ccap_As.max = CellCapacity.maximum((int16_t *)&myBMS->CAP_max_at) * 10;
       myBMS->Ccap_As.mean = CellCapacity.mean() * 10;
     }
 
@@ -829,8 +815,8 @@ boolean canDiag::getBatteryVoltage(BatteryDiag_t *myBMS, boolean debug_verbose) 
       this->PrintReadBuffer(items);
     }
     this->ReadCellVoltage(data, 3, CELLCOUNT / 2);
-    myBMS->Cvolts.min = CellVoltage.minimum(&myBMS->CV_min_at);
-    myBMS->Cvolts.max = CellVoltage.maximum(&myBMS->CV_max_at);
+    myBMS->Cvolts.min = CellVoltage.minimum((int16_t *)&myBMS->CV_min_at);
+    myBMS->Cvolts.max = CellVoltage.maximum((int16_t *)&myBMS->CV_max_at);
     myBMS->Cvolts.mean = CellVoltage.mean();
     myBMS->Cvolts_stdev = CellVoltage.stddev();
     fOK &= true;
@@ -1068,7 +1054,7 @@ boolean canDiag::getBatterySOH(BatteryDiag_t *myBMS, boolean debug_verbose) {
 boolean canDiag::getODOcount(BatteryDiag_t *myBMS, boolean debug_verbose) {
 
   uint16_t items;
-  int16_t value = 0;
+  uint16_t value = 0;
   bool fOK = false;
 
   this->setCAN_ID(rqID_DASH, respID_DASH);
@@ -1108,7 +1094,7 @@ boolean canDiag::getODOcount(BatteryDiag_t *myBMS, boolean debug_verbose) {
 boolean canDiag::getRange(BatteryDiag_t *myBMS, boolean debug_verbose) {
 
   uint16_t items;
-  int16_t value = 0;
+  uint16_t value = 0;
   bool fOK = false;
 
   this->setCAN_ID(rqID_EVC, respID_EVC);
@@ -1170,6 +1156,7 @@ boolean canDiag::getHVcontactorCount(BatteryDiag_t *myBMS, boolean debug_verbose
 //! \return  report success (boolean)
 //--------------------------------------------------------------------------------
 boolean canDiag::printOCVtable(BatteryDiag_t *myBMS, boolean debug_verbose) {
+  (void) myBMS;
 
   uint16_t items;
   uint16_t value;
@@ -1205,9 +1192,10 @@ boolean canDiag::printOCVtable(BatteryDiag_t *myBMS, boolean debug_verbose) {
 //! \return  report success (boolean)
 //--------------------------------------------------------------------------------
 boolean canDiag::printRESfactors(BatteryDiag_t *myBMS, boolean debug_verbose) {
+  (void) myBMS;
 
   uint16_t items;
-  byte offset;
+  byte offset = 0;
   uint16_t value;
   bool fOK = false;
 
@@ -1256,10 +1244,9 @@ boolean canDiag::printRESfactors(BatteryDiag_t *myBMS, boolean debug_verbose) {
 //! \return  report success (boolean)
 //--------------------------------------------------------------------------------
 boolean canDiag::printBMSlog(BatteryDiag_t *myBMS, boolean debug_verbose) {
+  (void) myBMS;
 
   uint16_t items;
-  byte offset;
-  uint16_t value;
   bool fOK = false;
 
   this->setCAN_ID(rqID_BMS, respID_BMS);
@@ -1318,7 +1305,6 @@ void canDiag::printBMSlogSet(byte _length) {
 boolean canDiag::printCHGlog(boolean debug_verbose) {
 
   uint16_t items;
-  uint16_t value;
   bool fOK = false;
 
   //Structure for Log-Dataset
@@ -1414,6 +1400,7 @@ boolean canDiag::printCHGlog(boolean debug_verbose) {
 //! \return  report success (boolean)
 //--------------------------------------------------------------------------------
 char canDiag::OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose) {
+  (void) myOBL;
 
   uint16_t items;
 
@@ -1424,17 +1411,10 @@ char canDiag::OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose) {
     if (debug_verbose) {
        PrintReadBuffer(items);
     }
-    byte n;
-    byte comp = 0;
-    for (n = 3; n < 7; n++) {
-        if (strcmp_P(data[n], ID_7KW[n - 3])) {
-          comp++;
-        }
-    }
-    if (comp == 4){
+    if (memcmp(ID_7KW, data + 3, 4*sizeof(char)) == 0){
       return true;
     } else {
-      return false;
+      return -1;
     }
   } else {
     return -1;
@@ -1931,6 +1911,7 @@ boolean canDiag::getTCUdata(TCUdiag_t *myTCU, boolean debug_verbose) {
 //! \return  report success (boolean)
 //--------------------------------------------------------------------------------
 boolean canDiag::getTCUnetwork(TCUdiag_t *myTCU, boolean debug_verbose) {
+  (void) myTCU;
 
   uint16_t items;
   boolean fOK = false;

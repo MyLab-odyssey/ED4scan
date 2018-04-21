@@ -19,7 +19,7 @@
 //! \brief   Definitions and structures for the BMS module.
 //! \date    2018-April
 //! \author  MyLab-odyssey
-//! \version 0.4.2
+//! \version 0.4.3
 //--------------------------------------------------------------------------------
 #ifndef BMS_ED4_DFS_H
 #define BMS_ED4_DFS_H
@@ -30,20 +30,20 @@
 #define RAW_VOLTAGES 0           //!< Use RAW values or calc with ADC resolution 
 #define IQR_FACTOR 1.5           //!< Factor to define Outliners-Range, 1.5 for suspected outliners, 3 for definitive outliners
 
-char* const PROGMEM EVMODES[] ={"HV OFF", "slow CHG", "fast CHG", "HV ON"};
-char* const PROGMEM CAPMODES[] ={"As/10", "As/100"};
+const char* const PROGMEM EVMODES[] ={"HV OFF", "slow CHG", "fast CHG", "HV ON"};
+const char* const PROGMEM CAPMODES[] ={"As/10", "As/100"};
 
 //Data structure for statistics (min, mean, max values, percentiles)
 template<typename T>
 struct Stats_t{
-  uint16_t min;                  //!< minimum
+  int16_t min;                  //!< minimum
   byte p25_out_count;            //!< count of datasets below p25, including mininal value
-  uint16_t p25;                  //!< 25th percentile
+  int16_t p25;                  //!< 25th percentile
   T mean;                        //!< average 
-  uint16_t median;               //!< 50th percentile
-  uint16_t p75;                  //!< 75th percentile
+  int16_t median;               //!< 50th percentile
+  int16_t p75;                  //!< 75th percentile
   byte p75_out_count;            //!< count of datasets above p75, including maximum value
-  uint16_t max;                  //!< maximum
+  int16_t max;                  //!< maximum
 };
 
 //Data structure for value-range (min, mean, max values)
@@ -101,15 +101,15 @@ typedef struct {
   uint16_t LastMeas_days;        //!< days elapsed since last successful measurement
   
   Stats_t<float> Cvolts;         //!< calculated statistics from individual cell voltage query              
-  int16_t CV_min_at;             //!< cell number with voltage mininum in pack
-  int16_t CV_max_at;             //!< cell number with voltage maximum in pack
+  uint16_t CV_min_at;             //!< cell number with voltage mininum in pack
+  uint16_t CV_max_at;             //!< cell number with voltage maximum in pack
   float Cvolts_stdev;            //!< calculated standard deviation (populated)
   
   Stats_t<float> Ccap_As;        //!< cell capacity statistics calculated from individual cell data
-  int16_t CAP2_mean;             //!< cap mean from impedance track cap measurement
-  int16_t CAPusable_max;         //!< usable Ah by latest charge (As/10)
-  int16_t CAP_min_at;            //!< cell number with capacity mininum in pack
-  int16_t CAP_max_at;            //!< cell number with capacity maximum in pack
+  uint16_t CAP2_mean;             //!< cap mean from impedance track cap measurement
+  uint16_t CAPusable_max;         //!< usable Ah by latest charge (As/10)
+  uint16_t CAP_min_at;            //!< cell number with capacity mininum in pack
+  uint16_t CAP_max_at;            //!< cell number with capacity maximum in pack
   
   uint16_t CapInit;              //!< battery initial capacity (x/16) in As/10 at a certain/defined temperature maybe 45 degC
   uint16_t CapMeas;              //!< battery capacity measured in As/10

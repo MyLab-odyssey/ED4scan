@@ -1,8 +1,8 @@
 # ED4scan
 
-[![version](https://img.shields.io/badge/version-v0.4.2-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
+[![version](https://img.shields.io/badge/version-v0.4.3-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
 [![version](https://img.shields.io/badge/issues-none-brightgreen.svg)](https://github.com/MyLab-odyssey/ED4scan/issues)
-[![release](https://img.shields.io/badge/release-v0.4.2-brightgreen.svg)](https://github.com/MyLab-odyssey/ED4scan/releases)
+[![release](https://img.shields.io/badge/release-v0.4.2-orange.svg)](https://github.com/MyLab-odyssey/ED4scan/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/blob/master/LICENSE.txt)
 
 Retrieve battery diagnostic data from your 453 series smart electric drive EV. Get an overview of the EV state, the health of the battery or dig into more detailed measurements.  
@@ -72,6 +72,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## Version History
 |version  | comment|
 |-------- | --------|
+|v0.4.3   | THX to input from Jim, I fixed all warnings in ED4scan and optimized 7kW OBC test. Reviewing Libs in some days...|
 |v0.4.2   | 1st public release|
 
 (For more entries/details see VERSIONS.md)
