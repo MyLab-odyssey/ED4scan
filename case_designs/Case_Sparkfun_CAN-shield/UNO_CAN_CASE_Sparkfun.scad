@@ -57,8 +57,8 @@ module UNO_LID() {
             rotate([0,180,0]) {
                 enclosureLid(UNO, 3, 3, 3, false);
             }
-            rotate([0,180,-90]) {
-                translate([4,-8,2.7]) LogoImprint(0.7,15);
+            rotate([0,180,90]) {
+                translate([-65.5,45,2.7]) LogoImprint(0.7,15);
             }
         }
         translate([2.5, 7.9, 0])
