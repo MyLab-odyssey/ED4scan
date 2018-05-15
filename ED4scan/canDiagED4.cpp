@@ -1407,7 +1407,7 @@ char canDiag::OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose) {
     if (memcmp_P(data + 3, ID_7KW, 4*sizeof(char)) == 0){
       return true;
     } else {
-      return false;
+      return -1;
     }
   } else {
     return -1;
