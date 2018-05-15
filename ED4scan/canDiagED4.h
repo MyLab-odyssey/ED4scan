@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    canDiagED4.h
 //! \brief   Library module for retrieving diagnostic data. 
-//! \date    2018-April
+//! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.3
+//! \version 0.4.4
 //--------------------------------------------------------------------------------
 #ifndef CANDIAG_H
 #define CANDIAG_H
@@ -135,7 +135,6 @@ public:
     boolean printBMSlog(BatteryDiag_t *myBMS, boolean debug_verbose);
     void    printBMSlogSet(byte _length);
     boolean printCHGlog(boolean debug_verbose);
-    boolean getBatteryExperimentalData(BatteryDiag_t *myBMS, boolean debug_verbose);
 
     uint16_t getCellVoltage(byte n);
     uint16_t getCellCapacity(byte n);

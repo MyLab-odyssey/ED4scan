@@ -17,14 +17,13 @@
 //--------------------------------------------------------------------------------
 //! \file    ED4scan.h
 //! \brief   Definitions and structures for the main program ED4scan.ino
-//! \date    2018-April
+//! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.3
+//! \version 0.4.4
 //--------------------------------------------------------------------------------
 
 #define VERBOSE 1                //!< Set default VERBOSE mode to output individual cell data
 #define BOXPLOT 1                //!< Visualize cell statistics as boxplot
-#define EXPDATA 0                //!< EXPDATA mode will output experimental / NOT VERIFIED data
 #define HELP 1                   //!< HELP menu active
 #define ECHO 1                   //!< local ECHO of CLI 
 
@@ -34,7 +33,7 @@
 #include "canDiagED4.h"
 
 //Global definitions
-const char* const PROGMEM version = "0.4.3";
+const char* const PROGMEM version = "0.4.4";
 
 #define FAILURE F("* FAIL *")
 #define MSG_OK F("OK")
@@ -64,7 +63,7 @@ CTimeout LOG_Timeout(30000);     //!< Timeout value for LOG activity in millis
 typedef enum {MAIN, subBMS, subOBL, subTCU} submenu_t;
 
 //Test-Scheduler enum
-enum BMStask {BMSstate, BMSsoc, BMSlimit, BMSexp, BMSbal, EVkey, EVdcdc, EVodo, EVrange, BMSCOUNT};
+enum BMStask {BMSstate, BMSsoc, BMSlimit, BMSbal, EVkey, EVdcdc, EVodo, EVrange, BMSCOUNT};
 enum OBLtask {OBLdc, OBLac, OBLctrl, OBLt, OBLCOUNT};
 
 //deviceStatus struct to store menu settings

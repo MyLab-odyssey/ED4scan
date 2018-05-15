@@ -1,11 +1,11 @@
 # ED4scan
 
-[![version](https://img.shields.io/badge/version-v0.4.3-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
+[![version](https://img.shields.io/badge/version-v0.4.4-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
 [![version](https://img.shields.io/badge/issues-none-brightgreen.svg)](https://github.com/MyLab-odyssey/ED4scan/issues)
 [![release](https://img.shields.io/badge/release-v0.4.2-orange.svg)](https://github.com/MyLab-odyssey/ED4scan/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/blob/master/LICENSE.txt)
 
-Retrieve battery diagnostic data from your 453 series smart electric drive EV. Get an overview of the EV state, the health of the battery or dig into more detailed measurements.  
+Retrieve battery diagnostic data from your 453 series smart electric drive EV / EQ. Get an overview of the EV state, the health of the battery or dig into more detailed measurements.  
 
 >**Please find further documentation of the usage and hints in the [ED4scan wiki](https://github.com/MyLab-odyssey/ED4scan/wiki).**  
 **This is the 1st public release and may contain errors - USE AT YOUR OWN RISK!**  
@@ -72,7 +72,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## Version History
 |version  | comment|
 |-------- | --------|
-|v0.4.3   | THX to input from Jim, I fixed all warnings in ED4scan and optimized 7kW OBC test. Reviewing Libs in some days...|
+|v0.4.4   | **Please also reload library files**|
+|         | THX to MineCooky I was able to adapt to the new BMS rev. for the EQ series. 22kW charger will be implemented next.|
+|         | In addition minor bug fixes are included: AvgNew-Library optimized, warnings fixed.|
+|v0.4.3   | THX to input from Jim, I fixed all warnings in ED4scan and optimized 7kW OBC test. Reviewing libs in some days...|
 |v0.4.2   | 1st public release|
 
 (For more entries/details see VERSIONS.md)

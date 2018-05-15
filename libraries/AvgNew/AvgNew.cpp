@@ -30,9 +30,9 @@
  //--------------------------------------------------------------------------------
 //! \file    AvgNew.cpp
 //! \brief   Modified version of Average.h (no template, small footprint).
-//! \date    2017-July
+//! \date    2018-May
 //! \author  My-Lab-odyssey
-//! \version 0.3.0
+//! \version 0.4.0
 //--------------------------------------------------------------------------------
 #include "AvgNew.h"
 
@@ -46,6 +46,7 @@ Average::~Average() {
 void Average::init(uint16_t size) {
     _size = size;
     _count = 0;
+    _zero_count = 0;
     _store = (uint16_t *) malloc(sizeof(uint16_t) * size);
     _position = 0;                                            // track position for circular storage
     _sum = 0;                                                 // track sum for fast mean calculation
@@ -63,6 +64,13 @@ int16_t Average::getCount() {
 }
 
 void Average::push(uint16_t entry) {
+    if (entry == 0) {
+        _zero_count++;
+    }
+    if (entry == 65535) {
+    	  entry = 0;
+        _zero_count++;
+    }
     if (_count < _size) {                                     // adding new values to array
         _count++;                                             // count number of values in array
     } else {                                                  // overwriting old values
@@ -71,7 +79,7 @@ void Average::push(uint16_t entry) {
     _store[_position] = entry;                                // store new value in array
     _sum += entry;                                            // add the new value to _sum
     _position += 1;                                           // increment the position counter
-    if (_position >= _size) _position = 0;                    // loop the position counter
+    if (_position >= _size) _position = 0;                    // loop the position counter                                        
 }
 
 
@@ -84,7 +92,7 @@ float Average::mean() {
     if (_count == 0) {
         return 0;
     }
-    return ((float)_sum / (float)_count);                     // mean calculation based on _sum
+    return ((float)_sum / ((float)_count - _zero_count));                     // mean calculation based on _sum
 }
 
 uint16_t Average::mode() {
@@ -128,7 +136,7 @@ uint16_t Average::minimum() {
     return this->minimum(NULL);
 }
 
-uint16_t Average::minimum(int16_t *index) {
+uint16_t Average::minimum(uint16_t *index) {
   uint16_t minval;
 
     if (index != NULL) {
@@ -141,13 +149,16 @@ uint16_t Average::minimum(int16_t *index) {
 
   minval = this->get(0);
 
-  for(byte i = 0; i < _count; i++) {
-      if(this->get(i) < minval) {
-      minval = this->get(i);
+  for (byte i = 0; i < _count; i++) {
+      if (minval == 0) {
+		minval = this->get(i);
+      }
+      if (this->get(i) < minval) {
+      	minval = this->get(i);
 
-              if (index != NULL) {
-                *index = i;
-              }
+           if (index != NULL) {
+              *index = i;
+           }
       }
 
   }
@@ -158,7 +169,7 @@ uint16_t Average::maximum() {
     return this->maximum(NULL);
 }
 
-uint16_t Average::maximum(int16_t *index) {
+uint16_t Average::maximum(uint16_t *index) {
   uint16_t maxval;
 
     if (index != NULL) {
@@ -201,15 +212,15 @@ float Average::stddev() {
     square = theta * theta;
     sum += square;
   }
-  return sqrt(sum/(float)_count);
+  return sqrt(sum/((float)_count - _zero_count));
 }
 
 uint16_t Average::get(uint16_t index) {
     if (index >= _count) {
         return 0;
     }
-    byte cindex = _position-index;                         // position in circular buffer
-    if (cindex < 0) cindex = _size + cindex;                  // need to loop around for negative cindex
+    //byte cindex = _position-index;                       // position in circular buffer
+    //if (cindex < 0) cindex = _size + cindex;             // need to loop around for negative cindex
     return _store[index];
 }
 
@@ -242,7 +253,7 @@ void Average::leastSquares(float &m, float &c, float &r) {
     r = (sumxy - sumx * sumy / _count) / sqrt((sumx2 - sqr(sumx)/_count) * (sumy2 - sqr(sumy)/_count));
 }
 
-uint16_t Average::predict(int16_t x) {
+uint16_t Average::predict(uint16_t x) {
     float m, c, r;
     this->leastSquares(m, c, r); // y = mx + c;
 
@@ -273,9 +284,9 @@ void Average::bubble_sort()
       }
 }
 
-int16_t Average::percentile(int16_t pos)
+uint16_t Average::percentile(byte pos)
 {
-  int16_t result = 0;
+  uint16_t result = 0;
 
   if ( pos > 0 && pos % 2 == 0 )
     result = ( _store[pos] + _store[pos + 1] ) / 2;

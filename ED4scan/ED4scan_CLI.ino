@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    ED4scan_CLI.ino
 //! \brief   Functions for the Command Line Interface (CLI) menu system
-//! \date    2018-April
+//! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.3
+//! \version 0.4.4
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ void get_BMSlog (uint8_t arg_cnt, char **args) {
 void get_SOHstate (uint8_t arg_cnt, char **args) {
   (void) arg_cnt, (void) args;  // Avoid unused param warning
   
-  byte bms_sel[] = {3,5};
+  byte bms_sel[] = {5};
   switch (myDevice.menu) {
     case subBMS:
       PrintSPACER(F("Battery SOH"));
@@ -483,7 +483,7 @@ void tcu_sub (uint8_t arg_cnt, char **args) {
 //! \brief   Logging data. Call queryfunctions and output the data
 //--------------------------------------------------------------------------------
 void logdata(){
-  byte bms_sel[] = {BMSstate, BMSsoc, BMSlimit, BMSexp, BMSbal};
+  byte bms_sel[] = {BMSstate, BMSsoc, BMSlimit, BMSbal};
   getState_BMS(bms_sel, sizeof(bms_sel));
   getOBLdata();
 

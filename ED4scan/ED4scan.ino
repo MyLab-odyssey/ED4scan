@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------
-// ED BMSdiag, v0.4.3
+// ED BMSdiag, v0.4.4
 // Retrieve battery diagnostic data from your smart electric drive EV.
 //
 // (c) 2018 by MyLab-odyssey
@@ -23,9 +23,9 @@
 //! \brief   Only usable for fourth gen. model 453 series, build >= 2017
 //! \brief   Build a diagnostic tool with the MCP2515 CAN controller and Arduino
 //! \brief   compatible hardware.
-//! \date    2018-April
+//! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.3
+//! \version 0.4.4
 //--------------------------------------------------------------------------------
 #include "ED4scan.h"
 
@@ -128,9 +128,6 @@ void getState_BMS(byte *selected, byte len) {
       case BMSlimit:
          fOK = DiagCAN.getBatteryLimits(&BMS, false);
          break;
-      case BMSexp:
-         fOK = DiagCAN.getBatteryExperimentalData(&BMS, false);
-         break;
       case BMSbal:
          fOK = DiagCAN.getBalancingStatus(&BMS, false);
          break;
@@ -181,17 +178,11 @@ boolean getBMSdata(byte *selected, byte len) {
       case 2:
          fOK = DiagCAN.getBalancingStatus(&BMS, false);
          break;
-      case 3:
-         fOK = DiagCAN.getBatteryExperimentalData(&BMS, false);
-         break;
       case 5:
          fOK = DiagCAN.getBatterySOH(&BMS, false);
          break;
       case 6:
          fOK = DiagCAN.getBatteryDate(&BMS, false);
-         break;
-      case 7:
-         //
          break;
       case 8:
          fOK = DiagCAN.getBatteryTemperature(&BMS, false);

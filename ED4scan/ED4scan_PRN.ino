@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    ED4scan_PRN.ino
 //! \brief   Functions for serial printing the datasets
-//! \date    2018-April
+//! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.3
+//! \version 0.4.4
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
@@ -99,27 +99,19 @@ void printHeaderData() {
 void printBatteryProductionData(boolean fRPT) {
   (void) fRPT;  // Avoid unused param warning
   
-  Serial.print(F("SOH  : ")); Serial.print(BMS.SOH); Serial.print(F("%, "));
+  Serial.print(F("SOH  : ")); Serial.print(BMS.SOH / 2.0, 1); Serial.print(F("%, "));
   if (BMS.fSOH == 0xFF) {
     Serial.println(MSG_OK);
   } else if (BMS.fSOH == 0) {
     Serial.println(F("FAULT"));
   } else {
-    Serial.print(F("DEGRADED")); Serial.print(F(", ")); Serial.println(BMS.fSOH, HEX);
+    Serial.print(F("UNDEF")); Serial.print(F(", ")); Serial.println(BMS.fSOH, HEX);
   }
   Serial.print(F("Y/M/D: ")); Serial.print(2000 + BMS.ProdYear); Serial.print('/');
   Serial.print(BMS.ProdMonth); Serial.print('/'); Serial.println(BMS.ProdDay);
   byte type[3] = {0x37, 0x38, 0x39};
   DiagCAN.setCAN_ID(rqID_BMS, respID_BMS);
   DiagCAN.printECUrev(false, type);
-}
-
-//--------------------------------------------------------------------------------
-//! \brief   Output experimental data
-//--------------------------------------------------------------------------------
-void printExperimentalData() {
-  Serial.println(F("*** Experimental Data - NOT VERIFIED ***"));
-  Serial.print(F("SOC recal state      : ")); Serial.println(BMS.SOCrecalState);
 }
 
 //--------------------------------------------------------------------------------
@@ -155,7 +147,7 @@ void printStandardDataset() {
   Serial.print(BMS.LV_DCDC_load / 256.0 * 100.0,0); Serial.println(F(" %"));
   Serial.print(F("EV   : "));
   Serial.print((char *) pgm_read_word(ON_OFF + (BMS.KeyState))); Serial.print(F(", ")); 
-  if (BMS.EVmode <= 3) {
+  if (BMS.EVmode <= 3 || BMS.EVmode == 5) {
     Serial.print((char *) pgm_read_word(EVMODES + BMS.EVmode));
   } else {
     Serial.print(BMS.EVmode, HEX);
@@ -186,12 +178,12 @@ void printBMS_CellVoltages() {
 //! \brief   Output BMS capacity estimation
 //--------------------------------------------------------------------------------
 void printBMS_CapacityEstimate() {
-  Serial.print(F("Measured : ")); Serial.print(BMS.CAP2_mean / 36.0, 3); Serial.print(F(", "));
+  Serial.print(F("Measured : ")); Serial.print(BMS.CAP2_mean / 360.0, 3); Serial.print(F(", "));
   Serial.print(BMS.CapMeas / 360.0, 3); Serial.println(F(" (dSOC), "));
   Serial.print(F("Estimate : ")); Serial.print(BMS.Cap_combined_quality,3); Serial.print(F(" of ")); 
   Serial.print(BMS.Cap_meas_quality,3); Serial.print(F(", "));
   Serial.print(BMS.LastMeas_days); Serial.println(F(" day(s)"));
-  Serial.print(F("Capacity : ")); Serial.print(BMS.CapInit / 360.0, 3); Serial.print(F(" (INIT), "));
+  Serial.print(F("Capacity : ")); Serial.print(BMS.CapInit / 360.0, 3); Serial.print(F(" (LIM), "));
   Serial.print(BMS.CapEstimate / 360.0, 3); Serial.println(F(" (EST)"));
 }
 
@@ -199,7 +191,7 @@ void printBMS_CapacityEstimate() {
 //! \brief   Output SOH state and capacity estimation
 //--------------------------------------------------------------------------------
 void printBMS_SOHstate() {
-  Serial.print(F("SOH : ")); Serial.print(BMS.SOH); Serial.print(F(" %, "));
+  Serial.print(F("SOH : ")); Serial.print(BMS.SOH / 2.0, 1); Serial.print(F(" %, "));
   Serial.print(BMS.CAPusable_max / 360.0, 3); Serial.println(F(" Ah"));
 }
 
@@ -246,16 +238,15 @@ void printBMStemperatures() {
 //--------------------------------------------------------------------------------
 void printIndividualCellData() {
   Serial.print(F("# ;mV  ;As/10"));
-  if (myDevice.CapMeasMode == 2) {
-    Serial.println('0');
+  if (myDevice.CapMeasMode == 1) {
+    Serial.println(F(" dSOC"));
   } else {
     Serial.println();
   }
   for(int16_t n = 0; n < CELLCOUNT; n++){
     if (n < 9) Serial.print('0');
     Serial.print(n+1); Serial.print(F(";")); Serial.print(DiagCAN.getCellVoltage(n));
-    Serial.print(F(";")); Serial.print(DiagCAN.getCellCapacity(n));
-    //Serial.print(F(";")); Serial.print(BMS.BattCV_Bal[n]);
+    Serial.print(F(";")); Serial.print(DiagCAN.getCellCapacity(n) * BMS.CAP_factor);
     Serial.println();
   }
   PrintSPACER(F("Cell Statistics"));
@@ -473,10 +464,6 @@ void printBMSdata() {
     DiagCAN.getBatteryVoltageDist(&BMS);  //Sort cell voltages rising up and calc. quartiles
                                           //!!! after sorting track of individual cells is lost -> redo ".getBatteryVoltages" !!!
     printVoltageDistribution();           //Print statistic data as boxplot
-    PrintSPACER();
-  }
-  if (EXPDATA) {
-    printExperimentalData();
     PrintSPACER();
   }
 }

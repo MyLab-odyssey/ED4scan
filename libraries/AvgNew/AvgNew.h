@@ -30,9 +30,9 @@
 //--------------------------------------------------------------------------------
 //! \file    AvgNew.h
 //! \brief   Modified version of Average.h (no template, small footprint).
-//! \date    2017-July
+//! \date    2018-May
 //! \author  My-Lab-odyssey
-//! \version 0.3.0
+//! \version 0.4.0
 //--------------------------------------------------------------------------------
 
 #ifndef AVERAGE_NEW_H
@@ -60,6 +60,7 @@ class Average {
 
         byte _position;                                   // _position variable for circular buffer
         byte _count;
+        byte _zero_count;
         byte _size;
 
     public:
@@ -76,18 +77,18 @@ class Average {
         float mean();
         uint16_t mode();
         uint16_t minimum();
-        uint16_t minimum(int16_t *);
+        uint16_t minimum(uint16_t *);
         uint16_t maximum();
-        uint16_t maximum(int16_t *);
+        uint16_t maximum(uint16_t *);
         float stddev();
         uint16_t get(uint16_t);
         void leastSquares(float &m, float &b, float &r);
         int16_t getCount();
-        uint16_t predict(int16_t x);
+        uint16_t predict(uint16_t x);
         uint16_t sum();
         void clear();
         void bubble_sort();
-        int16_t percentile(int pos);
+        uint16_t percentile(byte pos);
         //Average<T> &operator=(Average<T> &a);
 
 };

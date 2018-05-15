@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    _OBL_dfs.h
 //! \brief   Definitions and structures for the On-Board-Loader (Charger) module.
-//! \date    2018-April
+//! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.3
+//! \version 0.4.4
 //--------------------------------------------------------------------------------
 #ifndef OBL_DFS_H
 #define OBL_DFS_H
@@ -27,7 +27,7 @@
 //Definitions for OBL
 #define TEMP_OFFSET 50
 
-const char ID_7KW[] = {'2','2','3','9'};
+const char PROGMEM ID_7KW[] = {'2','2','3','9'};
 const char* const PROGMEM OBL_ID[] ={"22KW", "7KW"};
 const char* const PROGMEM OBL_STATE[] ={"CHG", "ON", "STBY"};
 const char* const PROGMEM PILOT_STATE[] ={"-", "B", "C", "D", "E"};
