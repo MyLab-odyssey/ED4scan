@@ -32,7 +32,7 @@
 //! \brief   Modified version of Average.h (no template, small footprint).
 //! \date    2018-May
 //! \author  My-Lab-odyssey
-//! \version 0.4.0
+//! \version 0.4.1
 //--------------------------------------------------------------------------------
 #include "AvgNew.h"
 
@@ -92,7 +92,7 @@ float Average::mean() {
     if (_count == 0) {
         return 0;
     }
-    return ((float)_sum / ((float)_count - _zero_count));                     // mean calculation based on _sum
+    return ((float)_sum / ((float)_count - _zero_count));      // mean calculation based on _sum without zero values
 }
 
 uint16_t Average::mode() {
@@ -149,18 +149,18 @@ uint16_t Average::minimum(uint16_t *index) {
 
   minval = this->get(0);
 
-  for (byte i = 0; i < _count; i++) {
-      if (minval == 0) {
+  for (byte i = 1; i < _count; i++) {
+	//Zero may be a undef. measurement -> discard as minimum!
+      if (minval == 0) {  
 		minval = this->get(i);
       }
-      if (this->get(i) < minval) {
+      if (this->get(i) < minval && this->get(i) != 0) {
       	minval = this->get(i);
 
            if (index != NULL) {
               *index = i;
            }
       }
-
   }
   return minval;
 }
