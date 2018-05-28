@@ -19,15 +19,18 @@
 //! \brief   Definitions and structures for the On-Board-Loader (Charger) module.
 //! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.4
+//! \version 0.5.1
 //--------------------------------------------------------------------------------
 #ifndef OBL_DFS_H
 #define OBL_DFS_H
 
 //Definitions for OBL
 #define TEMP_OFFSET 50
-
+boolean const FASTCHG = false; //!< Set to true if you have the 22kW fast charger 
+                               //!< to compile for this variant
+                               
 const char PROGMEM ID_7KW[] = {'2','2','3','9'};
+const char PROGMEM ID_22KW[] = {'0','1','3','2'};
 const char* const PROGMEM OBL_ID[] ={"22KW", "7KW"};
 const char* const PROGMEM OBL_STATE[] ={"CHG", "ON", "STBY"};
 const char* const PROGMEM PILOT_STATE[] ={"-", "B", "C", "D", "E"};
@@ -52,6 +55,7 @@ typedef struct {
   byte OutTemp;                   //!< water outlet temperature
   byte InternalTemp;              //!< internal temperature, reported by charger
   byte CoolantTemp;               //!< Coolant temperature degC (x-40)
+  byte SysTemp;                   //!< System temperature in %
 } ChargerDiag_t; 
 
 const PROGMEM uint32_t rqID_OBL                   = 0x792;
@@ -61,6 +65,23 @@ const PROGMEM byte rqChargerAC[3]                 = {0x22, 0x73, 0x03};
 const PROGMEM byte rqChargerDC[3]                 = {0x22, 0x73, 0x04};
 const PROGMEM byte rqChargerTemperatures[3]       = {0x22, 0x73, 0x00};
 const PROGMEM byte rqChargerState[3]              = {0x22, 0x30, 0x08};
+const PROGMEM byte rqJB2LV[3]                     = {0x22, 0x50, 0x6C};
+const PROGMEM byte rqJB2AC_Ph1_RMS_A[3]           = {0x22, 0x20, 0x01};
+const PROGMEM byte rqJB2AC_Ph2_RMS_A[3]           = {0x22, 0x50, 0x3A};
+const PROGMEM byte rqJB2AC_Ph3_RMS_A[3]           = {0x22, 0x50, 0x3B};
+const PROGMEM byte rqJB2AC_Ph12_RMS_V[3]          = {0x22, 0x50, 0x3F};
+const PROGMEM byte rqJB2AC_Ph23_RMS_V[3]          = {0x22, 0x50, 0x41};
+const PROGMEM byte rqJB2AC_Ph31_RMS_V[3]          = {0x22, 0x50, 0x42};
+const PROGMEM byte rqJB2AC_Power[3]               = {0x22, 0x50, 0x4A};
+const PROGMEM byte rqJB2DC_A[3]                   = {0x22, 0x50, 0x4D};
+const PROGMEM byte rqJB2DC_V[3]                   = {0x22, 0x50, 0x4E};
+const PROGMEM byte rqJB2Temp_SYS[3]               = {0x22, 0x20, 0x04};
+const PROGMEM byte rqJB2Temp_COOL[3]              = {0x22, 0x20, 0x05};
+const PROGMEM byte rqJB2Temp_HOT[3]               = {0x22, 0x50, 0x54};
+const PROGMEM byte rqJB2State[3]                  = {0x22, 0x20, 0x03};
+const PROGMEM byte rqJB2Pilot_DUTY[3]             = {0x22, 0x50, 0x26};
+const PROGMEM byte rqJB2Pilot_V[3]                = {0x22, 0x50, 0x27};
+const PROGMEM byte rqJB2SelCurrent[3]             = {0x22, 0x50, 0x70};
 
 const PROGMEM uint32_t rqID_CHGCTRL               = 0x719;
 const PROGMEM uint32_t respID_CHGCTRL             = 0x739; 

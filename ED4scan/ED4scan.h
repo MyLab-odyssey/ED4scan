@@ -19,7 +19,7 @@
 //! \brief   Definitions and structures for the main program ED4scan.ino
 //! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.4
+//! \version 0.5.1
 //--------------------------------------------------------------------------------
 
 #define VERBOSE 1                //!< Set default VERBOSE mode to output individual cell data
@@ -33,7 +33,7 @@
 #include "canDiagED4.h"
 
 //Global definitions
-const char* const PROGMEM version = "0.4.4";
+const char* const PROGMEM version = "0.5.1";
 
 #define FAILURE F("* FAIL *")
 #define MSG_OK F("OK")

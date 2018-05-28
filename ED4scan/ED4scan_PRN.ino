@@ -19,7 +19,7 @@
 //! \brief   Functions for serial printing the datasets
 //! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.4
+//! \version 0.5.1
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
@@ -339,50 +339,77 @@ void printOBL_Status() {
   } else {
     Serial.println(OBL.PilotState, HEX);
   }
-  Serial.print(F("Cable code : ")); 
-  if (OBL.AmpsCableCode > 0) {
-    Serial.print(OBL.AmpsCableCode); Serial.println(F(" Ohm"));
+  if (!FASTCHG) {
+    Serial.print(F("Cable code : ")); 
+    if (OBL.AmpsCableCode > 0) {
+      Serial.print(OBL.AmpsCableCode); Serial.println(F(" Ohm"));
+    } else {
+      Serial.println('-');
+    }
+    Serial.print(F("Charger max: ")); Serial.print(OBL.Amps_setpoint); Serial.print(F(" A, State: "));
+    if (OBL.ChargerState <= 4) {
+      Serial.println((char *) pgm_read_word(OBL_STATE + (OBL.ChargerState / 2)));
+    } else {
+      Serial.println(OBL.ChargerState, HEX);
+    }
+    Serial.print(F("AC L1: ")); Serial.print(OBL.MainsVoltage[0] / 10.0, 1); Serial.print(F(" V, "));
+    Serial.print((OBL.MainsAmps[0] + OBL.MainsAmps[1]) / 10.0, 1); Serial.print(F(" A, "));
+    Serial.print(OBL.MainsFreq, 1); Serial.println(F(" Hz"));
+    Serial.print(F("AC R1: ")); Serial.print(OBL.CHGpower[0] / 2000.0, 2); Serial.print(F(" kW, R2: "));
+    Serial.print(OBL.CHGpower[1] / 2000.0, 2); Serial.print(F(" kW, max: "));
+    Serial.print(OBL.CHGpower[2] / 64.0, 2); Serial.println(F(" kW"));
   } else {
-    Serial.println('-');
+    Serial.print(F("Charger max: ")); Serial.print(OBL.Amps_setpoint); Serial.print(F(" A, State: "));
+    Serial.println((char *) pgm_read_word(OBL_STATE + (OBL.ChargerState)));
+    Serial.print(F("AC L1-2-3: ")); Serial.print(OBL.MainsVoltage[0] / 2.0, 1); Serial.print(F(", "));
+    Serial.print(OBL.MainsVoltage[1] / 2.0, 1); Serial.print(F(", "));
+    Serial.print(OBL.MainsVoltage[2] / 2.0, 1); Serial.println(F(" V"));
+    Serial.print(F("           ")); Serial.print(OBL.MainsAmps[0] / 10.0, 1); Serial.print(F(", "));
+    Serial.print(OBL.MainsAmps[1] / 10.0, 1); Serial.print(F(", "));
+    Serial.print(OBL.MainsAmps[2] / 10.0, 1); Serial.print(F(" A; "));
+    Serial.print(OBL.CHGpower[0] / 1000.0, 3); Serial.println(F(" kW"));
   }
-  Serial.print(F("Charger max: ")); Serial.print(OBL.Amps_setpoint); Serial.print(F(" A, State: "));
-  if (OBL.ChargerState <= 4) {
-    Serial.println((char *) pgm_read_word(OBL_STATE + (OBL.ChargerState / 2)));
-  } else {
-    Serial.println(OBL.ChargerState, HEX);
-  }
-  Serial.print(F("AC L1: ")); Serial.print(OBL.MainsVoltage[0] / 10.0, 1); Serial.print(F(" V, "));
-  Serial.print((OBL.MainsAmps[0] + OBL.MainsAmps[1]) / 10.0, 1); Serial.print(F(" A, "));
-  Serial.print(OBL.MainsFreq, 1); Serial.println(F(" Hz"));
-  Serial.print(F("AC R1: ")); Serial.print(OBL.CHGpower[0] / 2000.0, 2); Serial.print(F(" kW, R2: "));
-  Serial.print(OBL.CHGpower[1] / 2000.0, 2); Serial.print(F(" kW, max: "));
-  Serial.print(OBL.CHGpower[2] / 64.0, 2); Serial.println(F(" kW"));
   Serial.print(F("DC HV: ")); Serial.print(OBL.DC_HV / 10.0, 1); Serial.print(F(" V, "));
-  Serial.print(OBL.DC_Current / 10.0, 1); Serial.println(F(" A"));
-  Serial.print(F("DC LV: ")); Serial.print(OBL.LV / 100.0, 1); Serial.println(F(" V"));
+  Serial.print(OBL.DC_Current / 10.0, 2); Serial.println(F(" A"));
+  if (!FASTCHG) {
+    Serial.print(F("DC LV: ")); Serial.print(OBL.LV / 100.0, 1); Serial.println(F(" V"));
+  } else {
+    Serial.print(F("DC LV: ")); Serial.print(OBL.LV / 64.0, 1); Serial.println(F(" V"));
+  }
 }
 
 //--------------------------------------------------------------------------------
 //! \brief   Output OBL charger temperatures
 //--------------------------------------------------------------------------------
 void printOBLtemperatures() {
-  Serial.print(F("In     : ")); 
-  if (OBL.InTemp < 0xFF) {
-    Serial.println(OBL.InTemp - TEMP_OFFSET, DEC);
+  if (!FASTCHG) {
+    Serial.print(F("In     : ")); 
+    if (OBL.InTemp < 0xFF) {
+      Serial.println(OBL.InTemp - TEMP_OFFSET, DEC);
+    } else {
+      Serial.println('-');
+    }
   } else {
-    Serial.println('-');
+    Serial.print(F("System : ")); Serial.print(OBL.SysTemp, DEC); Serial.println(F(" %"));
   }
-  Serial.print(F("Intern.: ")); 
-  if (OBL.InternalTemp < 0xFF) {
-    Serial.println(OBL.InternalTemp - TEMP_OFFSET, DEC);
+  if (!FASTCHG) {
+    Serial.print(F("Intern.: ")); 
+    if (OBL.InternalTemp < 0xFF) {
+      Serial.println(OBL.InternalTemp - TEMP_OFFSET, DEC);
+    } else {
+      Serial.println('-');
+    }
+    Serial.print(F("Out    : ")); 
+    if (OBL.OutTemp < 0xFF) {
+      Serial.println(OBL.OutTemp - TEMP_OFFSET, DEC);
+    } else {
+      Serial.println('-');
+    }
   } else {
-    Serial.println('-');
-  }
-  Serial.print(F("Out    : ")); 
-  if (OBL.OutTemp < 0xFF) {
-    Serial.println(OBL.OutTemp - TEMP_OFFSET, DEC);
-  } else {
-    Serial.println('-');
+    Serial.print(F("Hotspot: ")); 
+    if (OBL.InternalTemp < 0xFF) {
+      Serial.println(OBL.InternalTemp - TEMP_OFFSET + 10, DEC);
+    }
   }
   Serial.print(F("Coolant: ")); 
   if (OBL.OutTemp < 0xFF) {

@@ -19,7 +19,7 @@
 //! \brief   Library module for retrieving diagnostic data.
 //! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.4
+//! \version 0.5.1
 //--------------------------------------------------------------------------------
 #include "canDiagED4.h"
 
@@ -1388,9 +1388,9 @@ boolean canDiag::printCHGlog(boolean debug_verbose) {
 }
 
 //--------------------------------------------------------------------------------
-//! \brief   Test if a OBL fastcharger is installed by reading HW-Rev.
+//! \brief   Test if a OBL slow charger is installed by reading HW-Rev.
 //! \param   enable verbose / debug output (boolean)
-//! \return  report success (boolean)
+//! \return  report success (char) 7kW (true), 22kW (false), fail (-1)
 //--------------------------------------------------------------------------------
 char canDiag::OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose) {
   (void) myOBL;
@@ -1404,8 +1404,10 @@ char canDiag::OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose) {
     if (debug_verbose) {
        PrintReadBuffer(items);
     }
-    if (memcmp_P(data + 3, ID_7KW, 4*sizeof(char)) == 0){
+    if (memcmp_P(data + 3, ID_7KW, 4*sizeof(char)) == 0) {
       return true;
+    } else if (memcmp_P(data + 3, ID_22KW, 4*sizeof(char)) == 0) {
+      return false;
     } else {
       return -1;
     }
@@ -1512,32 +1514,71 @@ boolean canDiag::getChargerTemperature(ChargerDiag_t *myOBL, boolean debug_verbo
   uint16_t items;
   boolean fOK = false;
 
-  this->setCAN_ID(rqID_OBL, respID_OBL);
-  items = this->Request_Diagnostics(rqChargerTemperatures);
+  this->setCAN_ID(rqID_OBL, respID_OBL);  //ECU address of OBL and JB2 are the same
 
-  if (items) {
-    if (debug_verbose) {
-      PrintReadBuffer(items);
+  //OBL slow charger variant
+  if (!FASTCHG) { 
+    items = this->Request_Diagnostics(rqChargerTemperatures);
+  
+    if (items) {
+      if (debug_verbose) {
+        PrintReadBuffer(items);
+      }
+      myOBL->InTemp = data[3];
+      myOBL->OutTemp = data[4];
+      myOBL->InternalTemp = data[5];
+      fOK = true;
+    } else {
+      fOK = false;
     }
-    myOBL->InTemp = data[3];
-    myOBL->OutTemp = data[4];
-    myOBL->InternalTemp = data[5];
-    fOK = true;
-  } else {
-    fOK = false;
-  }
-
-  this->setCAN_ID(rqID_CHGCTRL, respID_CHGCTRL);
-  items = this->Request_Diagnostics(rqCoolantTemp);
-
-  if (items) {
-    if (debug_verbose) {
-      PrintReadBuffer(items);
+  
+    this->setCAN_ID(rqID_CHGCTRL, respID_CHGCTRL);
+    items = this->Request_Diagnostics(rqCoolantTemp);
+  
+    if (items) {
+      if (debug_verbose) {
+        PrintReadBuffer(items);
+      }
+      myOBL->CoolantTemp = data[3];
+      fOK &= true;
+    } else {
+      fOK &= false;
     }
-    myOBL->CoolantTemp = data[3];
-    fOK &= true;
+  
+  //JB2 fast charger variant
   } else {
-    fOK &= false;
+    items = this->Request_Diagnostics(rqJB2Temp_SYS);
+    if (items) {
+      if (debug_verbose) {
+        PrintReadBuffer(items);
+      }
+      myOBL->SysTemp = data[3];
+      fOK = true;
+    } else {
+      fOK = false;
+    }
+    
+    items = this->Request_Diagnostics(rqJB2Temp_HOT);
+    if (items) {
+      if (debug_verbose) {
+        PrintReadBuffer(items);
+      }
+      myOBL->InternalTemp = data[3];
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+  
+    items = this->Request_Diagnostics(rqJB2Temp_COOL);
+    if (items) {
+      if (debug_verbose) {
+        PrintReadBuffer(items);
+      }
+      myOBL->CoolantTemp = data[3];
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
   }
 
   return fOK;
@@ -1555,79 +1596,155 @@ boolean canDiag::getChargerCtrlValues(ChargerDiag_t *myOBL, boolean debug_verbos
   uint16_t value;
   bool fOK = false;
 
-  this->setCAN_ID(rqID_CHGCTRL, respID_CHGCTRL);
-
-  items = this->Request_Diagnostics(rqChargerSelCurrent);
-  if (items) {
-    if (debug_verbose) {
-      this->PrintReadBuffer(items);
-    }
-    myOBL->Amps_setpoint = data[3] / 4; //Get data (x/4)
-    fOK = true;
-  } else {
-    fOK = false;
-  }
-
-  items = this->Request_Diagnostics(rqMainsMaxCurrent);
-  if (items) {
-    if (debug_verbose) {
-      this->PrintReadBuffer(items);
-    }
-    myOBL->AmpsChargingpoint = data [3];
-    fOK &= true;
-  } else {
-    fOK &= false;
-  }
-
-  items = this->Request_Diagnostics(rqConnectorCoding);
-  if (items) {
-    if (debug_verbose) {
-      this->PrintReadBuffer(items);
-    }
-    this->ReadDiagWord(&value, data, 3, 1);
-    if (value < 1800) {
-      myOBL->AmpsCableCode = value;
+  //OBL slow charger variant
+  if (!FASTCHG) { 
+    this->setCAN_ID(rqID_CHGCTRL, respID_CHGCTRL);
+    items = this->Request_Diagnostics(rqChargerSelCurrent);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      myOBL->Amps_setpoint = data[3] / 4; //Get data (x/4)
+      fOK = true;
     } else {
-      myOBL->AmpsCableCode = 0;
+      fOK = false;
     }
-    fOK &= true;
+  
+    items = this->Request_Diagnostics(rqMainsMaxCurrent);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      myOBL->AmpsChargingpoint = data [3];
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+  
+    items = this->Request_Diagnostics(rqConnectorCoding);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      if (value < 1800) {
+        myOBL->AmpsCableCode = value;
+      } else {
+        myOBL->AmpsCableCode = 0;
+      }
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+  
+    items = this->Request_Diagnostics(rqMaxPowerAvail);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      myOBL->CHGpower[2] = value;
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+  
+    items = this->Request_Diagnostics(rqChargerPilotState);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      myOBL->PilotState = data[3];
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+  
+    this->setCAN_ID(rqID_OBL, respID_OBL);
+    items = this->Request_Diagnostics(rqChargerState);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      myOBL->ChargerState = data[3];
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+  //JB2 fast charger variant
   } else {
-    fOK &= false;
-  }
+    this->setCAN_ID(rqID_OBL, respID_OBL);
+    items = this->Request_Diagnostics(rqJB2SelCurrent);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      myOBL->Amps_setpoint = data[3] / 4; //Get data (x/4)
+      fOK = true;
+    } else {
+      fOK = false;
+    }
 
-  items = this->Request_Diagnostics(rqMaxPowerAvail);
-  if (items) {
-    if (debug_verbose) {
-      this->PrintReadBuffer(items);
+    items = this->Request_Diagnostics(rqJB2Pilot_DUTY);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      if (data[3] / 2 <= 85) {
+        myOBL->AmpsChargingpoint = (data [3] / 2.0) * 0.6;
+      } else if (data[3] / 2 <= 97) {
+        myOBL->AmpsChargingpoint = ((data [3] / 2.0) - 64) * 2.5;
+      } else {
+        myOBL->AmpsChargingpoint = 0;
+      }
+      fOK &= true;
+    } else {
+      fOK &= false;
     }
-    this->ReadDiagWord(&value, data, 3, 1);
-    myOBL->CHGpower[2] = value;
-    fOK &= true;
-  } else {
-    fOK &= false;
-  }
 
-  items = this->Request_Diagnostics(rqChargerPilotState);
-  if (items) {
-    if (debug_verbose) {
-      this->PrintReadBuffer(items);
+    items = this->Request_Diagnostics(rqJB2Pilot_V);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      byte pilotV = (data[3] / 4.0) - 15;
+      if (pilotV >= 11) {
+        myOBL->PilotState = 0;
+      } else if (pilotV >= 8) {
+        myOBL->PilotState = 1;
+      } else if (pilotV >= 5) {
+        myOBL->PilotState = 2;
+      } else if (pilotV >= 2) {
+        myOBL->PilotState = 3;
+      } else {
+        myOBL->PilotState = 4;
+      }
+      fOK &= true;
+    } else {
+      fOK &= false;
     }
-    myOBL->PilotState = data[3];
-    fOK &= true;
-  } else {
-    fOK &= false;
-  }
 
-  this->setCAN_ID(rqID_OBL, respID_OBL);
-  items = this->Request_Diagnostics(rqChargerState);
-  if (items) {
-    if (debug_verbose) {
-      this->PrintReadBuffer(items);
+    this->setCAN_ID(rqID_OBL, respID_OBL);
+    items = this->Request_Diagnostics(rqJB2State);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      switch (data[3]) {
+        case 1:
+          myOBL->ChargerState = 0; //CHG  
+          break;
+        case 4:
+          myOBL->ChargerState = 1; //ON  
+          break;
+        case 5:
+          myOBL->ChargerState = 2; //STBY 
+          break;
+      }
+      fOK &= true;
+    } else {
+      fOK &= false;
     }
-    myOBL->ChargerState = data[3];
-    fOK &= true;
-  } else {
-    fOK &= false;
   }
 
   return fOK;
@@ -1642,39 +1759,86 @@ boolean canDiag::getChargerDC(ChargerDiag_t *myOBL, boolean debug_verbose) {
 
   uint16_t items;
   uint16_t value;
+  bool fOK = false;  
 
   this->setCAN_ID(rqID_OBL, respID_OBL);
-  items = this->Request_Diagnostics(rqChargerDC);
 
-  if (items) {
-    if (debug_verbose) {
-      this->PrintReadBuffer(items);
-    }
-    this->ReadDiagWord(&value, data, 4, 1);
-    if (value < 0xEA00) {  //OBL showing only valid data while charging
-      myOBL->DC_HV = value;
+  //OBL slow charger variant
+  if (!FASTCHG) {
+    items = this->Request_Diagnostics(rqChargerDC);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 4, 1);
+      if (value < 0xEA00) {  //OBL showing only valid data while charging
+        myOBL->DC_HV = value;
+      } else {
+        myOBL->DC_HV = 0;
+      }
+      this->ReadDiagWord(&value, data, 10, 1);
+      if (value < 0xEA00) {  //OBL showing only valid data while charging
+        myOBL->DC_Current = value;
+      } else {
+        myOBL->DC_Current = 0;
+      }
+  
+      items = this->Request_Diagnostics(rqChargerLV);
+      if (items) {
+        if (debug_verbose) {
+          this->PrintReadBuffer(items);
+        }
+        this->ReadDiagWord(&value, data, 3, 1);
+        myOBL->LV = value;
+      }
+  
+      return true;
     } else {
-      myOBL->DC_HV = 0;
+      return false;
     }
-    this->ReadDiagWord(&value, data, 10, 1);
-    if (value < 0xEA00) {  //OBL showing only valid data while charging
-      myOBL->DC_Current = value;
+  //JB2 fast charger variant
+  } else {
+    items = this->Request_Diagnostics(rqJB2DC_V);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      myOBL->DC_HV = (value - 1023) * 10;
+      fOK = true;
     } else {
-      myOBL->DC_Current = 0;
+      fOK = false;
     }
 
-    items = this->Request_Diagnostics(rqChargerLV);
+    items = this->Request_Diagnostics(rqJB2DC_A);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      if (value > 0x0C80) {  //OBL showing only valid data while charging
+        myOBL->DC_Current = (value * 0.625) - 2000;
+      } else {
+        myOBL->DC_Current = 0;
+      }
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+
+    items = this->Request_Diagnostics(rqJB2LV);
     if (items) {
       if (debug_verbose) {
         this->PrintReadBuffer(items);
       }
       this->ReadDiagWord(&value, data, 3, 1);
       myOBL->LV = value;
+      fOK &= true;
+    } else {
+      fOK &= false;
     }
 
-    return true;
-  } else {
-    return false;
+    return fOK;
   }
 }
 
@@ -1687,63 +1851,154 @@ boolean canDiag::getChargerAC(ChargerDiag_t *myOBL, boolean debug_verbose) {
 
   uint16_t items;
   uint16_t value;
+  bool fOK = false;
 
   this->setCAN_ID(rqID_OBL, respID_OBL);
-  items = this->Request_Diagnostics(rqChargerAC);
 
-  if (items) {
-    if (debug_verbose) {
-      this->PrintReadBuffer(items);
-    }
-    //Get AC Currents (two rails from >= 20A, sum up for total current)
-    this->ReadDiagWord(&value, data, 10, 1);
-    if (value < 0xEA00) {  //OBL showing only valid data while charging
-      myOBL->MainsAmps[0] = value;
+  //OBL slow charger variant
+  if (!FASTCHG) {  
+    items = this->Request_Diagnostics(rqChargerAC);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      //Get AC Currents (two rails from >= 20A, sum up for total current)
+      this->ReadDiagWord(&value, data, 10, 1);
+      if (value < 0xEA00) {  //OBL showing only valid data while charging
+        myOBL->MainsAmps[0] = value;
+      } else {
+        myOBL->MainsAmps[0] = 0;
+      }
+      this->ReadDiagWord(&value, data, 12, 1);
+      if (value < 0xEA00) {  //OBL showing only valid data while charging
+        myOBL->MainsAmps[1] = value;
+      } else {
+        myOBL->MainsAmps[1] = 0;
+      }
+      myOBL->MainsAmps[2] = 0;
+  
+      //Get AC Voltages
+      this->ReadDiagWord(&value, data, 4, 1);
+      if (value < 0xEA00) {  //OBL showing only valid data while charging
+        myOBL->MainsVoltage[0] = value;
+  
+      } else {
+        myOBL->MainsVoltage[0] = 0;
+      }
+      myOBL->MainsVoltage[1] = 0; myOBL->MainsVoltage[2] = 0;
+      if (myOBL->MainsAmps[0] > 0 || myOBL->MainsAmps[1] > 0) {
+        myOBL->MainsFreq = data[15];
+      } else {
+        myOBL->MainsFreq = 0;
+      }
+  
+      //Get AC Power
+      this->ReadDiagWord(&value, data, 16, 1);
+      if (value < 0xEA00) {  //OBL showing only valid data while charging
+        myOBL->CHGpower[0] = value;
+  
+      } else {
+        myOBL->CHGpower[0] = 0;
+      }
+      this->ReadDiagWord(&value, data, 18, 1);
+      if (value < 0xEA00) {  //OBL showing only valid data while charging
+        myOBL->CHGpower[1] = value;
+  
+      } else {
+        myOBL->CHGpower[1] = 0;
+      }
+  
+      return true;
     } else {
-      myOBL->MainsAmps[0] = 0;
+      return false;
     }
-    this->ReadDiagWord(&value, data, 12, 1);
-    if (value < 0xEA00) {  //OBL showing only valid data while charging
-      myOBL->MainsAmps[1] = value;
-    } else {
-      myOBL->MainsAmps[1] = 0;
-    }
-    myOBL->MainsAmps[2] = 0;
-
-    //Get AC Voltages
-    this->ReadDiagWord(&value, data, 4, 1);
-    if (value < 0xEA00) {  //OBL showing only valid data while charging
-      myOBL->MainsVoltage[0] = value;
-
-    } else {
-      myOBL->MainsVoltage[0] = 0;
-    }
-    myOBL->MainsVoltage[1] = 0; myOBL->MainsVoltage[2] = 0;
-    if (myOBL->MainsAmps[0] > 0 || myOBL->MainsAmps[1] > 0) {
-      myOBL->MainsFreq = data[15];
-    } else {
-      myOBL->MainsFreq = 0;
-    }
-
-    //Get AC Power
-    this->ReadDiagWord(&value, data, 16, 1);
-    if (value < 0xEA00) {  //OBL showing only valid data while charging
-      myOBL->CHGpower[0] = value;
-
-    } else {
-      myOBL->CHGpower[0] = 0;
-    }
-    this->ReadDiagWord(&value, data, 18, 1);
-    if (value < 0xEA00) {  //OBL showing only valid data while charging
-      myOBL->CHGpower[1] = value;
-
-    } else {
-      myOBL->CHGpower[1] = 0;
-    }
-
-    return true;
+  //JB2 fast charger variant
   } else {
-    return false;
+    items = this->Request_Diagnostics(rqJB2AC_Ph12_RMS_V);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      myOBL->MainsVoltage[0] = value; //(x/2) done in PRN func.
+      fOK = true;
+    } else {
+      fOK = false;
+    }
+
+    items = this->Request_Diagnostics(rqJB2AC_Ph23_RMS_V);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      myOBL->MainsVoltage[1] = value; //(x/2) done in PRN func.
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+
+    items = this->Request_Diagnostics(rqJB2AC_Ph31_RMS_V);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      myOBL->MainsVoltage[2] = value; //(x/2) done in PRN func.
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+
+    items = this->Request_Diagnostics(rqJB2AC_Ph1_RMS_A);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      myOBL->MainsAmps[0] = (value * 0.625) - 2000; //(x/10) 
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+
+    items = this->Request_Diagnostics(rqJB2AC_Ph2_RMS_A);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      myOBL->MainsAmps[1] = (value * 0.625) - 2000; //(x/10) 
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+
+    items = this->Request_Diagnostics(rqJB2AC_Ph3_RMS_A);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      myOBL->MainsAmps[2] = (value * 0.625) - 2000; //(x/10) 
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+
+    items = this->Request_Diagnostics(rqJB2AC_Power);
+    if (items) {
+      if (debug_verbose) {
+        this->PrintReadBuffer(items);
+      }
+      this->ReadDiagWord(&value, data, 3, 1);
+      myOBL->CHGpower[0] = value - 20000; //Mains consumed power in W 
+      fOK &= true;
+    } else {
+      fOK &= false;
+    }
+
+    return fOK;
   }
 }
 
@@ -1751,7 +2006,7 @@ boolean canDiag::getChargerAC(ChargerDiag_t *myOBL, boolean debug_verbose) {
 //! \brief   Set charger ac_max current
 //! \param   current only in the range of 6 to 20 A (byte)
 //! \brief   >>> FOR TEST PURPOSE ONLY! DO NOT USE WHILE CHARGING <<<
-//! \brief   >>> DO NOT USE ON US and UK cars, as they work with 32A max<<< 
+//! \brief   >>> DO NOT USE ON US and UK cars, as they already use with 32A max<<< 
 //! \brief   >>> with entering [-yes] you ACCEPT ALL CONSEQUENCES 
 //! \brief   >>> AND THE USAGE IS SOLEY AT YOUR OWN RISK! <<<
 //! \brief   >>> LOSS OF WARRANTY, DAMAGE(s), VIOLATION OF REGULATIVE RULES <<<

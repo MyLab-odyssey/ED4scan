@@ -19,7 +19,7 @@
 //! \brief   Functions for the Command Line Interface (CLI) menu system
 //! \date    2018-May
 //! \author  MyLab-odyssey
-//! \version 0.4.4
+//! \version 0.5.1
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ void setupMenu() {
   cmdAdd("v", get_voltages);
   cmdAdd("bms", bms_sub);
   cmdAdd("tcu", tcu_sub);
-  if (OBL.OBL7KW > -1) cmdAdd("obc", obl_sub);
+  if (OBL.OBL7KW ^ FASTCHG) cmdAdd("obc", obl_sub);
   cmdAdd("all", get_all);
   cmdAdd("log", set_logging);
   cmdAdd("info", show_info);
@@ -279,8 +279,14 @@ void show_info(uint8_t arg_cnt, char **args) {
   //Serial.print(F("Usable Memory: ")); Serial.println(getFreeRam());
   //Serial.print(F("Menu: ")); Serial.println(myDevice.menu);
   Serial.print(F("OBC     : ")); 
-  if (OBL.OBL7KW > -1) {
-    Serial.println((char *) pgm_read_word(OBL_ID + (OBL.OBL7KW)));
+  if (OBL.OBL7KW > -1) {   
+    if (OBL.OBL7KW ^ FASTCHG) { 
+      Serial.print((char *) pgm_read_word(OBL_ID + (OBL.OBL7KW)));
+      Serial.println(F(" inst."));
+    } else {
+      Serial.print(F("Recompile for "));
+      Serial.println((char *) pgm_read_word(OBL_ID + (!OBL.OBL7KW)));
+    }
   } else {
     Serial.println(FAILURE);
   }
@@ -363,7 +369,7 @@ void set_cmd(uint8_t arg_cnt, char **args) {
       cmdOK = 1;
     }
   } else if (arg_cnt > 3) {
-    //** >>> FOR TEST PURPOSE ONLY! DO NOT USE WHILE CHARGING! DO NOT USE ON US and UK cars, as they work with 32A max<<< **
+    //** >>> FOR TEST PURPOSE ONLY! DO NOT USE WHILE CHARGING! DO NOT USE ON US and UK cars, as they already work with 32A max<<< **
     //** >>> with entering [-yes] you ACCEPT ALL CONSEQUENCES AND THE USAGE IS SOLEY AT YOUR OWN RISK! <<< **
     //** >>> LOSS OF WARRANTY, DAMAGE(s), VIOLATION OF REGULATIVE RULES, NO LIABILITY FOR THIS SOFTWARE - SEE LICENSE STATEMENT! <<< **
     if (OBL.OBL7KW && (BMS.KeyState == 0) && strcmp(args[1], "ac_max") == 0 && strcmp(args[3], "-yes") == 0) {
@@ -491,7 +497,12 @@ void logdata(){
     //Print Header
     Serial.println();
     Serial.print(F("dt/s: "));Serial.println(myDevice.timer);
-    Serial.println(F("#;SOC;rSOC,av;min;max;kWh;A;kW;V;Vc,min;max;Bal;L1/V;L1/A;HV/V;HV/A;R1/kW;R2/kW;Ti/C;Tint/C;To/C;Tc/C"));
+    Serial.print(F("#;SOC;rSOC,av;min;max;kWh;A;kW;V;Vc,min;max;Bal;"));
+    if (!FASTCHG) {
+      Serial.println(F("L1/V;L1/A;HV/V;HV/A;R1/kW;R2/kW;Ti/C;Tint/C;To/C;Tc/C"));
+    } else {
+      Serial.println(F("L1/V;L1/A;L2/V;L2/A;L3/V;L3/A;Pi/kW;HV/V;HV/A;Ts/%;Th/C;Tc/C"));
+    }
   }
   myDevice.logCount++;
   //Print logged values
@@ -511,16 +522,31 @@ void logdata(){
   Serial.print(BMS.CV_Range.min); Serial.print(CSV);
   Serial.print(BMS.CV_Range.max); Serial.print(CSV);
   Serial.print(BMS.BattBalState, HEX); Serial.print(CSV);
-  Serial.print(OBL.MainsVoltage[0] / 10.0, 1); Serial.print(CSV);
-  Serial.print((OBL.MainsAmps[0] + OBL.MainsAmps[1]) / 10.0, 1); Serial.print(CSV);
-  Serial.print(OBL.DC_HV / 10.0, 1); Serial.print(CSV);
-  Serial.print(OBL.DC_Current / 10.0, 1); Serial.print(CSV);
-  Serial.print(OBL.CHGpower[0] / 2000.0, 3); Serial.print(CSV);
-  Serial.print(OBL.CHGpower[1] / 2000.0, 3); Serial.print(CSV);
-  Serial.print(OBL.InTemp - TEMP_OFFSET, DEC); Serial.print(CSV);
-  Serial.print(OBL.InternalTemp - TEMP_OFFSET, DEC); Serial.print(CSV);
-  Serial.print(OBL.OutTemp - TEMP_OFFSET, DEC); Serial.print(CSV);
-  Serial.print(OBL.CoolantTemp - TEMP_OFFSET + 10, DEC);
+  if (!FASTCHG) {
+    Serial.print(OBL.MainsVoltage[0] / 10.0, 1); Serial.print(CSV);
+    Serial.print((OBL.MainsAmps[0] + OBL.MainsAmps[1]) / 10.0, 1); Serial.print(CSV);
+    Serial.print(OBL.DC_HV / 10.0, 1); Serial.print(CSV);
+    Serial.print(OBL.DC_Current / 10.0, 1); Serial.print(CSV);
+    Serial.print(OBL.CHGpower[0] / 2000.0, 3); Serial.print(CSV);
+    Serial.print(OBL.CHGpower[1] / 2000.0, 3); Serial.print(CSV);
+    Serial.print(OBL.InTemp - TEMP_OFFSET, DEC); Serial.print(CSV);
+    Serial.print(OBL.InternalTemp - TEMP_OFFSET, DEC); Serial.print(CSV);
+    Serial.print(OBL.OutTemp - TEMP_OFFSET, DEC); Serial.print(CSV);
+    Serial.print(OBL.CoolantTemp - TEMP_OFFSET + 10, DEC);
+  } else {
+    Serial.print(OBL.MainsVoltage[0] / 2.0, 1); Serial.print(CSV);
+    Serial.print(OBL.MainsAmps[0] / 10.0, 1); Serial.print(CSV);
+    Serial.print(OBL.MainsVoltage[1] / 2.0, 1); Serial.print(CSV);
+    Serial.print(OBL.MainsAmps[1] / 10.0, 1); Serial.print(CSV);
+    Serial.print(OBL.MainsVoltage[2] / 2.0, 1); Serial.print(CSV);
+    Serial.print(OBL.MainsAmps[2] / 10.0, 1); Serial.print(CSV);
+    Serial.print(OBL.CHGpower[0] / 1000.0, 3); Serial.print(CSV);
+    Serial.print(OBL.DC_HV / 10.0, 1); Serial.print(CSV);
+    Serial.print(OBL.DC_Current / 10.0, 2); Serial.print(CSV);
+    Serial.print(OBL.SysTemp, DEC); Serial.print(CSV);
+    Serial.print(OBL.InternalTemp - TEMP_OFFSET + 10, DEC); Serial.print(CSV);
+    Serial.print(OBL.CoolantTemp - TEMP_OFFSET + 10, DEC);
+  }
   Serial.println();
 }
 
