@@ -1,6 +1,6 @@
 # ED4scan
 
-[![version](https://img.shields.io/badge/version-v0.4.4-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
+[![version](https://img.shields.io/badge/version-v0.5.1-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
 [![version](https://img.shields.io/badge/issues-none-brightgreen.svg)](https://github.com/MyLab-odyssey/ED4scan/issues)
 [![release](https://img.shields.io/badge/release-v0.4.2-orange.svg)](https://github.com/MyLab-odyssey/ED4scan/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/blob/master/LICENSE.txt)
@@ -8,8 +8,8 @@
 Retrieve battery diagnostic data from your 453 series smart electric drive EV / EQ. Get an overview of the EV state, the health of the battery or dig into more detailed measurements.  
 
 >**Please find further documentation of the usage and hints in the [ED4scan wiki](https://github.com/MyLab-odyssey/ED4scan/wiki).**  
-**This is the 1st public release and may contain errors - USE AT YOUR OWN RISK!**  
-**The software will only work with the forth generation Smart electric drive build from 2017+ .**
+**This tool is still in development and may contain errors - USE AT YOUR OWN RISK!**  
+**The software will only work with the forth generation Smart electric drive build from 2017+ with 7.2kW and 22kW OBC versions.**
 
 <p align="center">
 <img  src="pictures/ED4scan_view_1.jpg" width="720"/>
@@ -72,6 +72,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## Version History
 |version  | comment|
 |-------- | --------|
+|v0.5.1   | **Please also reload library files**|
+|         | Added support for the Smart version of the Renault "Chameleon Charger".|
+|         | You have to compile the tool for the 22kW version: in _OBL_dfs.h set the constant FASTCHG = true (see installation in Wiki).|
 |v0.4.4   | **Please also reload library files**|
 |         | THX to MineCooky I was able to adapt to the new BMS rev. for the EQ series. 22kW charger will be implemented next.|
 |         | In addition minor bug fixes are included: AvgNew-Library optimized, warnings fixed.|
