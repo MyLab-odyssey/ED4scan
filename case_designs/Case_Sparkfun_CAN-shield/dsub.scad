@@ -7,16 +7,27 @@
 
 module dsub(sc,sz,dp){
     $fn=64;
-    sc_d = 1.75;
+    sc_d = 5.75;
+    w = 2.75;
     
     cs=(sz/2)-2.6;
     cs2=(sz/2)-4.095;
-    ns=(sz/2)+4.04;
-    translate([1.66,-ns+3,0]){
-        cylinder(r=1.6*sc_d,h=10);
+    ns=(sz/2+1);
+    hull() {
+        translate([2,-ns - w]){
+            cylinder(r=sc_d/2,h=10);
+        }
+        translate([2,-ns + 1]){
+            cylinder(r=sc_d/2,h=10);
+        }
     }
-    translate([1.66,ns-3,0]){
-        cylinder(r=1.6*sc_d,h=10);
+    hull() {
+        translate([2,ns + w]){
+            cylinder(r=sc_d/2,h=10);
+        }
+        translate([2,ns - 1]){
+            cylinder(r=sc_d/2,h=10);
+        }
     }
     
     scale([sc,sc,sc]){
@@ -37,3 +48,7 @@ module dsub(sc,sz,dp){
         }
     }
 }
+
+//color("RED") square([6,31], true);
+//dsub(1.1, 18, 5);
+
