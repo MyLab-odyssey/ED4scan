@@ -1,6 +1,6 @@
 # ED4scan
 
-[![version](https://img.shields.io/badge/version-v0.5.1-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
+[![version](https://img.shields.io/badge/version-v0.5.2-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
 [![version](https://img.shields.io/badge/issues-none-brightgreen.svg)](https://github.com/MyLab-odyssey/ED4scan/issues)
 [![release](https://img.shields.io/badge/release-v0.4.2-orange.svg)](https://github.com/MyLab-odyssey/ED4scan/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/blob/master/LICENSE.txt)
