@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    canDiagED4.h
 //! \brief   Library module for retrieving diagnostic data. 
-//! \date    2018-May
+//! \date    2018-June
 //! \author  MyLab-odyssey
-//! \version 0.5.1
+//! \version 0.5.2
 //--------------------------------------------------------------------------------
 #ifndef CANDIAG_H
 #define CANDIAG_H
@@ -39,7 +39,10 @@
 #endif
 
 #define VERBOSE_ENABLE 1         //!< Local verbose mode enable to allow output of CAN messages
-#define CAP_MODE 2               //!< Select used default capacity readout: 1 = dSOC in As/10, 2 = impedance meas. in As/100
+#define CAP_MODE 2               //!< Select used default capacity readout method: 1 = dSOC, 2 = by impedance meas.
+
+#define CS      10               //!< chip select pin of MCP2515 CAN-Controller
+#define MCP_INT 2                //!< Interrupt pin (low-active) used to detect CAN messages in buffer of MCP2515
 
 #include <mcp_can.h>
 #include <Timeout.h>

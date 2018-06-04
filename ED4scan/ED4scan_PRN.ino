@@ -179,7 +179,7 @@ void printBMS_CellVoltages() {
 //--------------------------------------------------------------------------------
 void printBMS_CapacityEstimate() {
   Serial.print(F("Measured : ")); Serial.print(BMS.CAP2_mean / 360.0, 3); Serial.print(F(", "));
-  Serial.print(BMS.CapMeas / 360.0, 3); Serial.println(F(" (dSOC), "));
+  Serial.print(BMS.CapMeas / 360.0, 3); Serial.println(F(" (SOH), "));
   Serial.print(F("Estimate : ")); Serial.print(BMS.Cap_combined_quality,3); Serial.print(F(" of ")); 
   Serial.print(BMS.Cap_meas_quality,3); Serial.print(F(", "));
   Serial.print(BMS.LastMeas_days); Serial.println(F(" day(s)"));
@@ -467,7 +467,6 @@ void printSplashScreen() {
 //--------------------------------------------------------------------------------
 void printBMSdata() {
   Serial.println(MSG_OK);
-  digitalWrite(CS, HIGH);
   PrintSPACER(F("BMS Status"));
   printHeaderData();
   PrintSPACER();
@@ -500,7 +499,6 @@ void printBMSdata() {
 //--------------------------------------------------------------------------------
 void printOBLdata() {
   Serial.println(MSG_OK);
-  digitalWrite(CS, HIGH);
   PrintSPACER(F("OBC Status"));
   printOBL_Status();
   PrintSPACER(F("OBC T/degC"));
@@ -513,7 +511,6 @@ void printOBLdata() {
 //--------------------------------------------------------------------------------
 void printTCUdata() {
   Serial.println(MSG_OK);
-  digitalWrite(CS, HIGH);
   PrintSPACER(F("TCU Status"));
   printTCU_Status();
   PrintSPACER();
@@ -531,7 +528,7 @@ void printBMSall() {
   for (byte i = 0; i < BMSCOUNT; i++) {
     selected[i] = i;
   }
-  Serial.print(F("Reading data"));
+  Serial.print(MSG_READ);
   myDevice.progress = true;
   getState_BMS(selected, BMSCOUNT);
   
@@ -560,7 +557,7 @@ void printBMSall() {
 //! \brief   Get all OBL data and output them
 //--------------------------------------------------------------------------------
 void printOBLall() {
-  Serial.print(F("Reading data"));
+  Serial.print(MSG_READ);
   if (getOBLdata()) {
     printOBLdata();
   } else {
@@ -573,7 +570,7 @@ void printOBLall() {
 //! \brief   Get all Cooling- and Subsystem data and output them
 //--------------------------------------------------------------------------------
 void printTCUall() {
-  Serial.print(F("Reading data"));
+  Serial.print(MSG_READ);
   if (getTCUdata()) {
     printTCUdata();
   } else {

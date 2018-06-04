@@ -1,6 +1,9 @@
 ## ED4scan Version History
 |version  | comment|
 |-------- | --------|
+|v0.5.2   | Minimized menu output to save memory and moved some constants for more project flexibility.|
+|         | INT pin for MCP CAN controller now defined by a constant.|
+|         | + some small bug fixes.|
 |v0.5.1   | **Please also reload library files**|
 |         | Added support for the Smart version of the Renault "Chameleon Charger".|
 |         | You have to compile the tool for the 22kW version: in _OBL_dfs.h set the constant FASTCHG = true (see installation in Wiki).|

@@ -37,9 +37,9 @@ struct TCUdatetime {
 
 //TCU data structure
 typedef struct {       
-  byte Rssi;                 //!< Received Signal Strength Indication
-  byte State;                //!< Status of TCU?
-  byte NetType;              //!< Network type 2G, 3G, changing?!
+  byte Rssi;                 //!< Received Signal Strength Indication, based on my own EMI measurements
+  byte State;                //!< Status of TCU
+  byte NetType;              //!< Network type 2G, 3G
   uint16_t Counter;          //!< Counter sum up APP heater activity -> SMS?
   TCUdatetime TCUtime;       //!< variabes to store time and date by TCU
 } TCUdiag_t; 
@@ -50,7 +50,7 @@ const PROGMEM uint32_t respID_TCU                 = 0x7DA;
 const PROGMEM byte rqTCUrssi[3]                   = {0x22, 0xFD, 0x1D};
 const PROGMEM byte rqTCUstate[3]                  = {0x22, 0xFE, 0x08};
 const PROGMEM byte rqTCUnetType[3]                = {0x22, 0x6D, 0x48};
-const PROGMEM byte rqTCUcounter[3]                = {0x22, 0x6D, 0x59}; //SMS counter?
+const PROGMEM byte rqTCUcounter[3]                = {0x22, 0x6D, 0x59};
 const PROGMEM byte rqTCUnetName[3]                = {0x22, 0xFD, 0x70}; 
 const PROGMEM byte rqTCUtime[3]                   = {0x22, 0x6D, 0x46};
 

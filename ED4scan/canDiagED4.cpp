@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    canDiagED4.cpp
 //! \brief   Library module for retrieving diagnostic data.
-//! \date    2018-May
+//! \date    2018-June
 //! \author  MyLab-odyssey
-//! \version 0.5.1
+//! \version 0.5.2
 //--------------------------------------------------------------------------------
 #include "canDiagED4.h"
 
@@ -225,7 +225,7 @@ uint16_t canDiag::Get_RequestResponse() {
 
   do {
     //--- Read Frames ---
-    if (!digitalRead(2))                        // If pin 2 is LOW, read receive buffer
+    if (!digitalRead(MCP_INT))                        // If pin 2 is LOW, read receive buffer
     {
       do {
         myCAN0->readMsgBuf(&rxID, &len, rxBuf);    // Read data: len = data length, buf = data byte(s)
@@ -258,7 +258,7 @@ uint16_t canDiag::Get_RequestResponse() {
             fDataOK = Read_FC_Response(items - 6);
           }
         }
-      } while (!digitalRead(2) && !myCAN_Timeout->Expired(false) && !fDataOK);
+      } while (!digitalRead(MCP_INT) && !myCAN_Timeout->Expired(false) && !fDataOK);
     }
   } while (!myCAN_Timeout->Expired(false) && !fDataOK);
 
@@ -291,7 +291,7 @@ boolean canDiag::Read_FC_Response(int16_t items) {
 
   do {
     //--- Read Frames ---
-    if (!digitalRead(2))                        // If pin 2 is LOW, read receive buffer
+    if (!digitalRead(MCP_INT))                        // If pin 2 is LOW, read receive buffer
     {
       do {
         myCAN0->readMsgBuf(&rxID, &len, rxBuf);    // Read data: len = data length, buf = data byte(s)
@@ -317,7 +317,7 @@ boolean canDiag::Read_FC_Response(int16_t items) {
             n = n + 7;
           }
         }
-      } while (!digitalRead(2) && !myCAN_Timeout->Expired(false) && items > 0);
+      } while (!digitalRead(MCP_INT) && !myCAN_Timeout->Expired(false) && items > 0);
     }
   } while (!myCAN_Timeout->Expired(false) && items > 0);
   if (!myCAN_Timeout->Expired(false)) {
@@ -363,7 +363,7 @@ void canDiag::PrintReadBuffer(uint16_t lines) {
 //! \brief   Cleanup after switching filters
 //--------------------------------------------------------------------------------
 boolean canDiag::ClearReadBuffer() {
-  if (!digitalRead(2)) {                       // still messages? pin 2 is LOW, clear the two rxBuffers by reading
+  if (!digitalRead(MCP_INT)) {                       // still messages? pin 2 is LOW, clear the two rxBuffers by reading
     for (byte i = 1; i <= 2; i++) {
       myCAN0->readMsgBuf(&rxID, &len, rxBuf);
     }
@@ -1023,7 +1023,7 @@ boolean canDiag::getBatterySOH(BatteryDiag_t *myBMS, boolean debug_verbose) {
     if (debug_verbose) {
       this->PrintReadBuffer(items);
     }
-    myBMS->SOH = data[11]; //SOH value (x/2) done in PRN modue
+    myBMS->SOH = data[11]; //SOH value (x/2) done in PRN module
     this->ReadDiagWord(&value, data, 7, 1);
     if (value == 0xFFFF) { //Data filed longer in new BMS rev. -> warp for next entry
       this->ReadDiagWord(&value, data, 9, 1);
@@ -1376,8 +1376,8 @@ boolean canDiag::printCHGlog(boolean debug_verbose) {
       Serial.print(ChgLog_P[i].chgTime); PRINT_CSV;
       Serial.print(ChgLog_P[i].soc / 5); PRINT_CSV;     
       Serial.print(ChgLog_P[i].temp - 40); PRINT_CSV;
-      Serial.print(ChgLog_P[i].chgStatus);
-      Serial.println(ChgLog_P[i].chgFlag, HEX); PRINT_CSV;
+      Serial.print(ChgLog_P[i].chgStatus); PRINT_CSV;
+      Serial.println(ChgLog_P[i].chgFlag, HEX); 
     }
   }
 

@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------
-// ED BMSdiag, v0.5.1
+// ED BMSdiag, v0.5.2
 // Retrieve battery diagnostic data from your smart electric drive EV.
 //
 // (c) 2018 by MyLab-odyssey
@@ -23,9 +23,9 @@
 //! \brief   Only usable for fourth gen. model 453 series, build >= 2017
 //! \brief   Build a diagnostic tool with the MCP2515 CAN controller and Arduino
 //! \brief   compatible hardware.
-//! \date    2018-May
+//! \date    2018-June
 //! \author  MyLab-odyssey
-//! \version 0.5.1
+//! \version 0.5.2
 //--------------------------------------------------------------------------------
 #include "ED4scan.h"
 
@@ -33,21 +33,17 @@
 //! \brief   SETUP()
 //--------------------------------------------------------------------------------
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200, SERIAL_8N1);
   while (!Serial); // while the serial stream is not open, do nothing
 
+  //Initialize MCP2515 and clear filters 
   pinMode(CS, OUTPUT);
-  pinMode(CS_SD, OUTPUT);
-  digitalWrite(CS_SD, HIGH);
-
-  //Initialize MCP2515 and clear filters
   DiagCAN.begin(&CAN0, &CAN_Timeout);
   DiagCAN.clearCAN_Filter();
-
   digitalWrite(CS, HIGH);
 
   //MCP2515 read buffer: setting pin 2 for input, LOW if CAN messages are received
-  pinMode(2, INPUT);
+  pinMode(MCP_INT, INPUT_PULLUP);
 
   //Serial.println(getFreeRam());
 
@@ -59,7 +55,7 @@ void setup() {
   DiagCAN.setCAPmode(CAP_MODE);
   OBL.OBL7KW = DiagCAN.OBL_7KW_Installed(&OBL, false);
 
-  Serial.print(F("Reading data")); myDevice.progress = true;
+  Serial.print(MSG_READ); myDevice.progress = true;
   show_splash(0, 0L); myDevice.progress = false;
   
   //Setup CLI, display prompt and local echo
@@ -92,14 +88,6 @@ int getFreeRam () {
 }
 
 //--------------------------------------------------------------------------------
-//! \brief   Wait for serial data to be avaiable.
-//--------------------------------------------------------------------------------
-void WaitforSerial() {
-  Serial.println(F("Press ENTER to start query:"));
-  while (!Serial.available()) {}                  // Wait for serial input to start
-}
-
-//--------------------------------------------------------------------------------
 //! \brief   Read all queued charachers to clear input buffer.
 //--------------------------------------------------------------------------------
 void clearSerialBuffer() {
@@ -112,7 +100,7 @@ void clearSerialBuffer() {
 //! \brief   Get status for BMS relevant core data
 //! \param   selected items for task (byte array), length of array
 //--------------------------------------------------------------------------------
-void getState_BMS(byte *selected, byte len) {
+boolean getState_BMS(byte *selected, byte len) {
   boolean fOK = false;
 
   //Read CAN-messages
@@ -153,7 +141,9 @@ void getState_BMS(byte *selected, byte len) {
     }
     testStep++;
   } while (testStep < len);
-  myDevice.progress = false;
+  //myDevice.progress = false;
+
+  return fOK;
 }
 
 //--------------------------------------------------------------------------------

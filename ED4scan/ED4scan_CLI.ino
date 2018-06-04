@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    ED4scan_CLI.ino
 //! \brief   Functions for the Command Line Interface (CLI) menu system
-//! \date    2018-May
+//! \date    2018-June
 //! \author  MyLab-odyssey
-//! \version 0.5.1
+//! \version 0.5.2
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
@@ -29,7 +29,6 @@ void setupMenu() {
   cmdInit();
 
   if (HELP) {  
-    cmdAdd("help", help);
     cmdAdd("?", help);
   } 
   cmdAdd("..", main_menu);
@@ -232,10 +231,9 @@ void help(uint8_t arg_cnt, char **args) {
       Serial.println(F("Main:"));
       Serial.println(F(" BMS, OBC, TCU"));
       Serial.println(F(" all"));
-      Serial.println(F(" help"));
-      Serial.println(F(" info Show config"));
-      Serial.println(F(" log  Enable log"));
-      Serial.println(F(" set  Edit config"));
+      Serial.println(F(" info show config"));
+      Serial.println(F(" log  on|off [t]"));
+      Serial.println(F(" set  edit config"));
       Serial.println(F(" #    EV status"));
       break;
     case subBMS:
@@ -255,6 +253,7 @@ void help(uint8_t arg_cnt, char **args) {
       Serial.println(MSG_ALL);
       break;
   }   
+  if ( myDevice.menu != MAIN) Serial.println(MSG_BACK);
 }
 #endif
 
@@ -263,9 +262,11 @@ void help(uint8_t arg_cnt, char **args) {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void show_splash(uint8_t arg_cnt, char **args) {
+  boolean fOK;
   (void) arg_cnt, (void) args;  // Avoid unused param warning
   byte selected[] = {BMSstate, BMSsoc, BMSlimit, EVkey, EVdcdc, EVodo, EVrange};
-  getState_BMS(selected, sizeof(selected));
+  fOK = getState_BMS(selected, sizeof(selected)); 
+  if (myDevice.progress & fOK) Serial.println(MSG_OK);
   printSplashScreen();
 }
 

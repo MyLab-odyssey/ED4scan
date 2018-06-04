@@ -17,39 +17,39 @@
 //--------------------------------------------------------------------------------
 //! \file    ED4scan.h
 //! \brief   Definitions and structures for the main program ED4scan.ino
-//! \date    2018-May
+//! \date    2018-June
 //! \author  MyLab-odyssey
-//! \version 0.5.1
+//! \version 0.5.2
 //--------------------------------------------------------------------------------
 
 #define VERBOSE 1                //!< Set default VERBOSE mode to output individual cell data
 #define BOXPLOT 1                //!< Visualize cell statistics as boxplot
-#define HELP 1                   //!< HELP menu active
+#define HELP 1                   //!< HELP menu active, disbale to save memory e.g. with DO_DEBUG_UPDATE on
 #define ECHO 1                   //!< local ECHO of CLI 
 
 #include <mcp_can.h>
 #include <Timeout.h>
 #include <Cmd.h>
 #include "canDiagED4.h"
+//#include <avr/pgmspace.h>
 
 //Global definitions
-const char* const PROGMEM version = "0.5.1";
+const char* const PROGMEM version = "0.5.2";
 
-#define FAILURE F("* FAIL *")
+#define FAILURE F("*FAIL*")
 #define MSG_OK F("OK")
+#define MSG_READ F("Get data ")
 #define MSG_FAIL 'F'
 #define MSG_DOT '.'
-#define MSG_ALL F(" all   Full dataset")
-#define MSG_V F(" v     Voltages")
-#define MSG_A_STATUS F(", amps & status")
-#define MSG_T F(" t     Temperatures")
+#define MSG_ALL F(" all")
+#define MSG_V F(" v    volts")
+#define MSG_A_STATUS F(", amps & stats")
+#define MSG_T F(" t    temps")
+#define MSG_BACK F(" ..   back")
 
 const char* const PROGMEM ON_OFF[] ={"OFF", "ON"};
 
-#define CS     10                //!< chip select pin of MCP2515 CAN-Controller
-#define CS_SD  8                 //!< CS for SD card, if you plan to use a logger...
-MCP_CAN CAN0(CS);                //!< Set CS pin
-
+MCP_CAN CAN0(CS);                //!< Define CAN bus object and set CS pin
 canDiag DiagCAN;                 //!< Diagnostics library object
 BatteryDiag_t BMS;               //!< BMS (Battery Management System) dataset object
 ChargerDiag_t OBL;               //!< OBL (On-Board Loader / Charger) dataset object
@@ -72,7 +72,7 @@ typedef struct {
   uint16_t timer = 30;           //!< timer interval for logging in seconds
   bool logging = false;          //!< flag for logging activity
   uint16_t logCount = 0;         //!< log entry counter
-  byte CapMeasMode = CAP_MODE;   //!< selected capacity readout/display mode As/10 (1) or As/100 (2)
+  byte CapMeasMode = CAP_MODE;   //!< selected capacity readout/display mode cont (1) or dSOC (2)
   bool verbose = VERBOSE;        //!< flag for individual cell voltages output
   bool ecu_list = 0;             //!< flag for listing ECU revisions under 'info' cmd
   bool progress = false;         //!< show task progress while reading data
