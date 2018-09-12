@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    ED4_BMS_dfs.h
 //! \brief   Definitions and structures for the BMS module.
-//! \date    2018-May
+//! \date    2018-September
 //! \author  MyLab-odyssey
-//! \version 0.5.1
+//! \version 0.5.5
 //--------------------------------------------------------------------------------
 #ifndef BMS_ED4_DFS_H
 #define BMS_ED4_DFS_H
@@ -30,8 +30,10 @@
 #define RAW_VOLTAGES 0           //!< Use RAW values or calc with ADC resolution 
 #define IQR_FACTOR 1.5           //!< Factor to define Outliners-Range, 1.5 for suspected outliners, 3 for definitive outliners
 
-const char* const PROGMEM EVMODES[] ={"HV OFF", "slow CHG", "CHG", "HV ON", "", "CHG"};
-const char* const PROGMEM CAPMODES[] ={"dSOC", "CONT"};
+const char* const PROGMEM EVMODES[] = {"HV OFF", "slow CHG", "CHG", "HV ON", "", "CHG"};
+const char* const PROGMEM CAPMODES[] = {"dSOC", "CONT"};
+const char* const PROGMEM BATTCOOL[] = {"?","-","-","W","W+AC"};
+const char* const PROGMEM BATTHEAT[] = {"?","-","-","-","W+PTC"};
 
 //Data structure for statistics (min, mean, max values, percentiles)
 template<typename T>
@@ -89,7 +91,7 @@ typedef struct {
   float LV;                      //!< 12V onboard voltage / LV system
   byte LV_DCDC_amps;             //!< current of DC/DC LV system, not 12V battery!
   byte LV_DCDC_load;             //!< load in % of DC/DC LV system, not 12V battery!
-  byte LV_DCDC_power;            //!< power in W (x/10) of DC/DC LV system, not 12V battery!
+  byte LV_DCDC_power;            //!< power in W (x/10) of DC/DC output of LV system, not 12V battery!
   byte LV_DCDC_state;            //!< DC/DC state
 
   Power_t<int16_t> BattPower;    //!< Actual sampled power values
@@ -123,7 +125,8 @@ typedef struct {
   byte ProdMonth;                //!< month of battery production
   byte ProdYear;                 //!< year of battery production
   
-  float SOC;                     //!< State of Charge, as displayed in dash (x/50)
+  float SOC;                     //!< State of Charge, reported by BMS (x/50)
+  float SOC_EVC;                 //!< State of Charge, as displayed in dash (x/50)
   byte SOCrecalState;            //!< State of SOC recal (experimental, tbd)
   
   byte fSOH;                     //!< Flag showing if degraded cells are found, or battery failiure present 
@@ -184,6 +187,7 @@ const PROGMEM byte rqDashTemperature[3]           = {0x22, 0x20, 0x0C};
 
 const PROGMEM uint32_t rqID_EVC                   = 0x7E4;
 const PROGMEM uint32_t respID_EVC                 = 0x7EC;
+const PROGMEM byte rqSOC_EVC[3]                   = {0x22, 0x20, 0x02};
 const PROGMEM byte rqKeyState[3]                  = {0x22, 0x20, 0x0E};
 const PROGMEM byte rqDCDC_State[3]                = {0x22, 0x30, 0x2A};
 const PROGMEM byte rqDCDC_Load[3]                 = {0x22, 0x34, 0x95};
@@ -192,6 +196,7 @@ const PROGMEM byte rqDCDC_Power[3]                = {0x22, 0x34, 0x94};
 const PROGMEM byte rqHV_Energy[3]                 = {0x22, 0x32, 0x0C}; //usable energy kWh
 const PROGMEM byte rqEV_ChgLog_P1[3]              = {0x22, 0x33, 0xD4};
 const PROGMEM byte rqEV_Range[3]                  = {0x22, 0x34, 0x51};
-
+const PROGMEM byte rqEV_BattCooling[3]            = {0x22, 0x34, 0xA7};
+const PROGMEM byte rqEV_BattHeating[3]            = {0x22, 0x34, 0xA8};
 
 #endif // of #ifndef BMS_ED4_DFS_H

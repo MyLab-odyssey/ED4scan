@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    canDiagED4.h
 //! \brief   Library module for retrieving diagnostic data. 
-//! \date    2018-June
+//! \date    2018-September
 //! \author  MyLab-odyssey
-//! \version 0.5.2
+//! \version 0.5.5
 //--------------------------------------------------------------------------------
 #ifndef CANDIAG_H
 #define CANDIAG_H
@@ -145,7 +145,7 @@ public:
 //--------------------------------------------------------------------------------
 //! \brief   Get methods for OBL data (charger)
 //--------------------------------------------------------------------------------
-    char    OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose);
+    int8_t  OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose);
     boolean getChargerTemperature(ChargerDiag_t *myOBL, boolean debug_verbose);
     boolean getChargerCtrlValues(ChargerDiag_t *myOBL, boolean debug_verbose);
     boolean getChargerDC(ChargerDiag_t *myOBL, boolean debug_verbose);
@@ -164,6 +164,8 @@ public:
     void setCAPmode(byte _mode);
     boolean CalcPower(BatteryDiag_t *myBMS);
     boolean printECUrev(boolean debug_verbose, byte _type[]);
+    int8_t getBattCoolingType(boolean debug_verbose);
+    int8_t getBattHeaterType(boolean debug_verbose);
 };
 
 #endif // of #ifndef CANDIAG_H

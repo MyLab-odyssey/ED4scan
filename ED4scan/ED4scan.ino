@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------
-// ED BMSdiag, v0.5.2
+// ED BMSdiag, v0.5.5
 // Retrieve battery diagnostic data from your smart electric drive EV.
 //
 // (c) 2018 by MyLab-odyssey
@@ -23,9 +23,9 @@
 //! \brief   Only usable for fourth gen. model 453 series, build >= 2017
 //! \brief   Build a diagnostic tool with the MCP2515 CAN controller and Arduino
 //! \brief   compatible hardware.
-//! \date    2018-June
+//! \date    2018-September
 //! \author  MyLab-odyssey
-//! \version 0.5.2
+//! \version 0.5.5
 //--------------------------------------------------------------------------------
 #include "ED4scan.h"
 
@@ -43,7 +43,7 @@ void setup() {
   digitalWrite(CS, HIGH);
 
   //MCP2515 read buffer: setting pin 2 for input, LOW if CAN messages are received
-  pinMode(MCP_INT, INPUT_PULLUP);
+  pinMode(MCP_INT, INPUT);
 
   //Serial.println(getFreeRam());
 

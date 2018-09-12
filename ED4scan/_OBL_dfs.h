@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    _OBL_dfs.h
 //! \brief   Definitions and structures for the On-Board-Loader (Charger) module.
-//! \date    2018-May
+//! \date    2018-June
 //! \author  MyLab-odyssey
-//! \version 0.5.1
+//! \version 0.5.3
 //--------------------------------------------------------------------------------
 #ifndef OBL_DFS_H
 #define OBL_DFS_H
@@ -37,7 +37,7 @@ const char* const PROGMEM PILOT_STATE[] ={"-", "B", "C", "D", "E"};
 
 //OBL data structure
 typedef struct {       
-  char OBL7KW = -1;               //!< Flag set if standard (TRUE) or 22kW charger (FALSE) is detected in system, -1 indicate fail
+  int8_t OBL7KW = -1;               //!< Flag set if standard (TRUE) or 22kW charger (FALSE) is detected in system, -1 indicate fail
   uint16_t MainsAmps[3];          //!< AC current of L1, L2, L3 (x/10)
   uint16_t MainsVoltage[3];       //!< AC voltage of L1, L2, L3 (x/10)
   uint16_t CHGpower[3];           //!< Power of rail1, rail2 W (x/2) & max available kw (x/64)

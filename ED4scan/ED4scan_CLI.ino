@@ -350,7 +350,7 @@ void set_logging(uint8_t arg_cnt, char **args) {
 //! \param   Argument count (int) and argument-list (char*) from Cmd.h
 //--------------------------------------------------------------------------------
 void set_cmd(uint8_t arg_cnt, char **args) {
-  char cmdOK = -1;
+  int8_t cmdOK = -1;
   if (arg_cnt == 3) {
     if (strcmp(args[1], "cap_mode") == 0) {
       myDevice.CapMeasMode = constrain((byte) cmdStr2Num(args[2], 10), 1, 2);
@@ -374,7 +374,7 @@ void set_cmd(uint8_t arg_cnt, char **args) {
     //** >>> with entering [-yes] you ACCEPT ALL CONSEQUENCES AND THE USAGE IS SOLEY AT YOUR OWN RISK! <<< **
     //** >>> LOSS OF WARRANTY, DAMAGE(s), VIOLATION OF REGULATIVE RULES, NO LIABILITY FOR THIS SOFTWARE - SEE LICENSE STATEMENT! <<< **
     if (OBL.OBL7KW && (BMS.KeyState == 0) && strcmp(args[1], "ac_max") == 0 && strcmp(args[3], "-yes") == 0) {
-      OBL.newAmps_setpoint = constrain((byte) cmdStr2Num(args[2], 10), 6, 20);
+      OBL.newAmps_setpoint = constrain((byte) cmdStr2Num(args[2], 10), 6, 32);
       if (DiagCAN.setACmax(&OBL, false)) {
         if (DiagCAN.getChargerCtrlValues(&OBL, false)) {
           if (OBL.Amps_setpoint == OBL.newAmps_setpoint) {

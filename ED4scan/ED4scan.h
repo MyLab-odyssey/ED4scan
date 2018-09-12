@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    ED4scan.h
 //! \brief   Definitions and structures for the main program ED4scan.ino
-//! \date    2018-June
+//! \date    2018-September
 //! \author  MyLab-odyssey
-//! \version 0.5.2
+//! \version 0.5.5
 //--------------------------------------------------------------------------------
 
 #define VERBOSE 1                //!< Set default VERBOSE mode to output individual cell data
@@ -33,8 +33,9 @@
 #include "canDiagED4.h"
 //#include <avr/pgmspace.h>
 
+
 //Global definitions
-const char* const PROGMEM version = "0.5.2";
+const char* const PROGMEM version = "0.5.3";
 
 #define FAILURE F("*FAIL*")
 #define MSG_OK F("OK")

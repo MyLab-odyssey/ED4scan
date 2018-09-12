@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    ED4scan_PRN.ino
 //! \brief   Functions for serial printing the datasets
-//! \date    2018-May
+//! \date    2018-September
 //! \author  MyLab-odyssey
-//! \version 0.5.1
+//! \version 0.5.5
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ void printWelcomeScreen() {
   do {
     Serial.print('.');
     delay(1000);
-  } while (digitalRead(2));
+  } while (digitalRead(MCP_INT));
   Serial.println(F("CONNECTED"));
   PrintSPACER();
 }
@@ -109,7 +109,12 @@ void printBatteryProductionData(boolean fRPT) {
   }
   Serial.print(F("Y/M/D: ")); Serial.print(2000 + BMS.ProdYear); Serial.print('/');
   Serial.print(BMS.ProdMonth); Serial.print('/'); Serial.println(BMS.ProdDay);
-  byte type[3] = {0x37, 0x38, 0x39};
+  int8_t CStype = DiagCAN.getBattCoolingType(false);
+  Serial.print(F("BCS  : ")); Serial.print((char *) pgm_read_word(BATTCOOL + CStype));
+  CStype = DiagCAN.getBattHeaterType(false);
+  Serial.print(F(", BHS: ")); Serial.println((char *) pgm_read_word(BATTHEAT + CStype));
+  
+  byte type[3] = {0x37, 0x38, 0x39};  //set main descriptor for rev query
   DiagCAN.setCAN_ID(rqID_BMS, respID_BMS);
   DiagCAN.printECUrev(false, type);
 }
@@ -118,7 +123,8 @@ void printBatteryProductionData(boolean fRPT) {
 //! \brief   Output standard dataset
 //--------------------------------------------------------------------------------
 void printStandardDataset() {
-  Serial.print(F("SOC  : ")); Serial.print(BMS.SOC,1); Serial.print(F(" % = "));
+  Serial.print(F("SOC  : ")); Serial.print(BMS.SOC,1); Serial.print(F(", "));
+  Serial.print(BMS.SOC_EVC,1); Serial.print(F(" % = "));
   Serial.print(BMS.Energy / 200.0, 2); Serial.print(F(" kWh = "));
   if (BMS.EVrange < 0x3FF) {
     Serial.print(BMS.EVrange);
@@ -215,8 +221,12 @@ void printHVcontactorState() {
 //! \brief   Output BMS temperatures
 //--------------------------------------------------------------------------------
 void printBMStemperatures() {
+  Serial.print(F("mean: ")); Serial.print((float) BMS.Temps[2] / 64.0, 0);
+  Serial.print(F(", min : ")); Serial.print((float) BMS.Temps[1] / 64.0, 0);
+  Serial.print(F(", max : ")); Serial.println((float) BMS.Temps[0] / 64.0, 0);
+  
   for (byte n = 3; n < 28; n = n + 9) {
-    Serial.print(F("module ")); Serial.print((n / 9) + 1); Serial.print(F(": "));
+    Serial.print(F("M ")); Serial.print((n / 9) + 1); Serial.print(F(": "));
     for (byte i = 0; i < 9; i++) {
       float temp = BMS.Temps[n + i] / 64.0;
       if (temp >= 0) Serial.print(' ');
@@ -228,9 +238,6 @@ void printBMStemperatures() {
       }
     }
   }
-  Serial.print(F("   mean : ")); Serial.print((float) BMS.Temps[2] / 64.0, 0);
-  Serial.print(F(", min : ")); Serial.print((float) BMS.Temps[1] / 64.0, 0);
-  Serial.print(F(", max : ")); Serial.println((float) BMS.Temps[0] / 64.0, 0);
 }
 
 //--------------------------------------------------------------------------------

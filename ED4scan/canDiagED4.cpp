@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    canDiagED4.cpp
 //! \brief   Library module for retrieving diagnostic data.
-//! \date    2018-June
+//! \date    2018-September
 //! \author  MyLab-odyssey
-//! \version 0.5.2
+//! \version 0.5.5
 //--------------------------------------------------------------------------------
 #include "canDiagED4.h"
 
@@ -911,6 +911,18 @@ boolean canDiag::getBatteryState(BatteryDiag_t *myBMS, boolean debug_verbose) {
     fOK &= false;
   }
 
+  items = this->Request_Diagnostics(rqSOC_EVC);
+  if (items) {
+    if (debug_verbose) {
+      this->PrintReadBuffer(items);
+    }
+    this->ReadDiagWord(&value, data, 3, 1);
+    myBMS->SOC_EVC = value / 50.0;
+    fOK &= true;
+  } else {
+    fOK &= false;
+  }
+
   return fOK;
 }
 
@@ -1392,7 +1404,7 @@ boolean canDiag::printCHGlog(boolean debug_verbose) {
 //! \param   enable verbose / debug output (boolean)
 //! \return  report success (char) 7kW (true), 22kW (false), fail (-1)
 //--------------------------------------------------------------------------------
-char canDiag::OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose) {
+int8_t canDiag::OBL_7KW_Installed(ChargerDiag_t *myOBL, boolean debug_verbose) {
   (void) myOBL;
 
   uint16_t items;
@@ -1502,6 +1514,52 @@ boolean canDiag::printECUrev(boolean debug_verbose, byte _type[]) {
   }
 
   return fOK;
+}
+
+//--------------------------------------------------------------------------------
+//! \brief   Get the cooling method of the battery:
+//! \brief   (with chiller option or only water cooled)
+//! \return  report value (int8_t)
+//--------------------------------------------------------------------------------
+int8_t canDiag::getBattCoolingType(boolean debug_verbose) {
+  uint16_t items;
+  int8_t CoolingType = 0;
+
+  this->setCAN_ID(rqID_EVC, respID_EVC);
+
+  items = this->Request_Diagnostics(rqEV_BattCooling);
+  
+  if (items) {
+    if (debug_verbose) {
+      PrintReadBuffer(items);
+    }
+    CoolingType = data[3];
+  }
+  
+  return CoolingType;
+}
+
+//--------------------------------------------------------------------------------
+//! \brief   Get the heating method of the battery:
+//! \brief   (water PTC installed?)
+//! \return  report value (int8_t)
+//--------------------------------------------------------------------------------
+int8_t canDiag::getBattHeaterType(boolean debug_verbose) {
+  uint16_t items;
+  int8_t HeatingType = 0;
+
+  this->setCAN_ID(rqID_EVC, respID_EVC);
+
+  items = this->Request_Diagnostics(rqEV_BattHeating);
+  
+  if (items) {
+    if (debug_verbose) {
+      PrintReadBuffer(items);
+    }
+    HeatingType = data[3];
+  }
+  
+  return HeatingType;
 }
 
 //--------------------------------------------------------------------------------
@@ -2014,7 +2072,7 @@ boolean canDiag::getChargerAC(ChargerDiag_t *myOBL, boolean debug_verbose) {
 //--------------------------------------------------------------------------------
 boolean canDiag::setACmax(ChargerDiag_t *myOBL, boolean debug_verbose) {
 
-  myOBL->newAmps_setpoint = constrain(myOBL->newAmps_setpoint, 6, 20);
+  myOBL->newAmps_setpoint = constrain(myOBL->newAmps_setpoint, 6, 32);
   //Serial.println(myOBL->newAmps_setpoint);
 
   byte _rqMsg[8] = {0x04, 0x2E, 0x61, 0x41, 0x50, 0x00, 0x00, 0x00};
