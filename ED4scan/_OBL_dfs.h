@@ -17,9 +17,9 @@
 //--------------------------------------------------------------------------------
 //! \file    _OBL_dfs.h
 //! \brief   Definitions and structures for the On-Board-Loader (Charger) module.
-//! \date    2018-June
+//! \date    2018-September
 //! \author  MyLab-odyssey
-//! \version 0.5.3
+//! \version 0.5.5
 //--------------------------------------------------------------------------------
 #ifndef OBL_DFS_H
 #define OBL_DFS_H

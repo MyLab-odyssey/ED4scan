@@ -35,7 +35,7 @@
 
 
 //Global definitions
-const char* const PROGMEM version = "0.5.3";
+const char* const PROGMEM version = "0.5.5";
 
 #define FAILURE F("*FAIL*")
 #define MSG_OK F("OK")
