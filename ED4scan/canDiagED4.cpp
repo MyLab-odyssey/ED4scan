@@ -2065,14 +2065,14 @@ boolean canDiag::getChargerAC(ChargerDiag_t *myOBL, boolean debug_verbose) {
 //! \param   current only in the range of 6 to 20 A (byte)
 //! \brief   >>> FOR TEST PURPOSE ONLY! DO NOT USE WHILE CHARGING <<<
 //! \brief   >>> DO NOT USE ON US and UK cars, as they already use with 32A max<<< 
-//! \brief   >>> with entering [-yes] you ACCEPT ALL CONSEQUENCES 
+//! \brief   >>> with entering [set ac_max 20 -yes] you ACCEPT ALL CONSEQUENCES 
 //! \brief   >>> AND THE USAGE IS SOLEY AT YOUR OWN RISK! <<<
 //! \brief   >>> LOSS OF WARRANTY, DAMAGE(s), VIOLATION OF REGULATIVE RULES <<<
 //! \brief   >>> NO LIABILITY FOR THIS SOFTWARE - SEE LICENSE STATEMENT! <<<
 //--------------------------------------------------------------------------------
 boolean canDiag::setACmax(ChargerDiag_t *myOBL, boolean debug_verbose) {
 
-  myOBL->newAmps_setpoint = constrain(myOBL->newAmps_setpoint, 6, 32);
+  myOBL->newAmps_setpoint = constrain(myOBL->newAmps_setpoint, 6, 20);
   //Serial.println(myOBL->newAmps_setpoint);
 
   byte _rqMsg[8] = {0x04, 0x2E, 0x61, 0x41, 0x50, 0x00, 0x00, 0x00};

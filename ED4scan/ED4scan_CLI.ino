@@ -371,10 +371,10 @@ void set_cmd(uint8_t arg_cnt, char **args) {
     }
   } else if (arg_cnt > 3) {
     //** >>> FOR TEST PURPOSE ONLY! DO NOT USE WHILE CHARGING! DO NOT USE ON US and UK cars, as they already work with 32A max<<< **
-    //** >>> with entering [-yes] you ACCEPT ALL CONSEQUENCES AND THE USAGE IS SOLEY AT YOUR OWN RISK! <<< **
+    //** >>> with entering [set ac_max 20 -yes] you ACCEPT ALL CONSEQUENCES AND THE USAGE IS SOLEY AT YOUR OWN RISK! <<< **
     //** >>> LOSS OF WARRANTY, DAMAGE(s), VIOLATION OF REGULATIVE RULES, NO LIABILITY FOR THIS SOFTWARE - SEE LICENSE STATEMENT! <<< **
     if (OBL.OBL7KW && (BMS.KeyState == 0) && strcmp(args[1], "ac_max") == 0 && strcmp(args[3], "-yes") == 0) {
-      OBL.newAmps_setpoint = constrain((byte) cmdStr2Num(args[2], 10), 6, 32);
+      OBL.newAmps_setpoint = constrain((byte) cmdStr2Num(args[2], 10), 6, 20);
       if (DiagCAN.setACmax(&OBL, false)) {
         if (DiagCAN.getChargerCtrlValues(&OBL, false)) {
           if (OBL.Amps_setpoint == OBL.newAmps_setpoint) {
