@@ -1,6 +1,8 @@
 ## ED4scan Version History
 |version  | comment|
 |-------- | --------|
+|v0.5.5   | Added new SOC readout from EVC and information about battery cooling / heating systems.|
+|         | + small bug fixes.|
 |v0.5.2   | Minimized menu output to save memory and moved some constants for more project flexibility.|
 |         | INT pin for MCP CAN controller now defined by a constant.|
 |         | + some small bug fixes.|

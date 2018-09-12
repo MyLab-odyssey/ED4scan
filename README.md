@@ -1,6 +1,6 @@
 # ED4scan
 
-[![version](https://img.shields.io/badge/version-v0.5.2-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
+[![version](https://img.shields.io/badge/version-v0.5.5-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
 [![version](https://img.shields.io/badge/issues-none-brightgreen.svg)](https://github.com/MyLab-odyssey/ED4scan/issues)
 [![release](https://img.shields.io/badge/release-v0.4.2-orange.svg)](https://github.com/MyLab-odyssey/ED4scan/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/blob/master/LICENSE.txt)
@@ -72,6 +72,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## Version History
 |version  | comment|
 |-------- | --------|
+|v0.5.5   | Added new SOC readout from EVC and information about battery cooling / heating systems.|
+|         | + small bug fixes.|
 |v0.5.2   | Minimized menu output to save memory and moved some constants for more project flexibility.|
 |         | INT pin for MCP CAN controller now defined by a constant.|
 |         | + some small bug fixes.|
