@@ -390,11 +390,13 @@ void set_cmd(uint8_t arg_cnt, char **args) {
       } else{
         cmdOK = 0;
       }
+    } else if (BMS.KeyState != 0) {
+      cmdOK = -2;
     }
   }
   if (cmdOK == 0) Serial.println(F("CMD: failed"));
-  if (cmdOK < 0) Serial.println(F("CMD: wrong format"));
-
+  if (cmdOK == -1) Serial.println(F("CMD: wrong format"));
+  if (cmdOK == -2) Serial.println(F("CMD: Ignition key in wrong position"));
 }
 
 void init_cmd_prompt() {
