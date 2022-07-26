@@ -1,3 +1,5 @@
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
+
 # ED4scan
 
 [![version](https://img.shields.io/badge/version-v0.5.5-blue.svg)](https://github.com/MyLab-odyssey/ED4scan/archive/master.zip)
